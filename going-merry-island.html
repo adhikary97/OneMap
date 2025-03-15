@@ -70,6 +70,55 @@
             text-align: center;
             margin-bottom: 20px;
         }
+        /* Islands Button and Panel Styles */
+        #islands-button {
+            position: absolute;
+            left: 20px;
+            top: 20px;
+            background-color: #3498db;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 100;
+            font-weight: bold;
+        }
+        #islands-panel {
+            position: absolute;
+            left: 20px;
+            top: 70px;
+            width: 300px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            display: none;
+            z-index: 100;
+        }
+        .island-item {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .island-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        .island-name {
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+        .island-distance {
+            font-size: 12px;
+            color: #3498db;
+            margin-bottom: 5px;
+        }
+        .island-description {
+            font-size: 14px;
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
@@ -83,6 +132,13 @@
             </div>
             <button id="start-button">Start Adventure</button>
         </div>
+    </div>
+    
+    <!-- Islands Button and Panel -->
+    <div id="islands-button">Nearby Islands</div>
+    <div id="islands-panel">
+        <h3>Choose Your Destination</h3>
+        <div id="islands-list"></div>
     </div>
     
     <div id="info-panel">
@@ -112,6 +168,49 @@
         let infoPanel;
         let lookingAtIsland = false;
         let gameStarted = false;
+        
+        // Islands feature variables
+        let islandsButton, islandsPanel;
+        let isPanelVisible = false;
+        
+        // Island data with coordinates in 3D space (x, y, z)
+        const islandsData = [
+            {
+                name: "Katori Island",
+                coordinates: { x: 0, y: 0, z: 150 }, // Current island in the scene
+                description: "A lush tropical paradise with dense forests, pristine beaches, and mysterious ancient ruins. Legend says a great treasure is hidden somewhere on this island."
+            },
+            {
+                name: "Drum Island",
+                coordinates: { x: -200, y: -10, z: 100 },
+                description: "A winter island known for its snowy mountains and advanced medical knowledge. Home to Dr. Kureha and the renowned doctor Chopper."
+            },
+            {
+                name: "Alabasta",
+                coordinates: { x: 300, y: 5, z: -50 },
+                description: "A desert kingdom ruled by the Nefertari family. Famous for its cultural heritage, ancient ruins, and the legendary city of Rainbase."
+            },
+            {
+                name: "Water 7",
+                coordinates: { x: 150, y: 0, z: 300 },
+                description: "A city built on water, famous for its shipwrights and the Galley-La Company. Known as the jewel of the Grand Line's shipbuilding industry."
+            },
+            {
+                name: "Sabaody Archipelago",
+                coordinates: { x: -100, y: 15, z: -200 },
+                description: "An archipelago of massive mangrove trees, serving as a gateway to the New World. Famous for its amusement park and the lawless areas."
+            },
+            {
+                name: "Punk Hazard",
+                coordinates: { x: 250, y: -5, z: -150 },
+                description: "A deadly island divided between extreme hot and cold. Once a government research facility, now abandoned and highly dangerous."
+            },
+            {
+                name: "Dressrosa",
+                coordinates: { x: -300, y: 8, z: -100 },
+                description: "A kingdom known for its passionate citizens, beautiful architecture, and the Corrida Colosseum. Ruled by the Donquixote family."
+            }
+        ];
         
         // Camera controls
         let cameraRotation = {
@@ -156,6 +255,9 @@
             // Create objects in the scene
             createObjects();
             
+            // Initialize the islands feature
+            initIslandsFeature();
+            
             // Handle window resize
             window.addEventListener('resize', onWindowResize);
             
@@ -167,6 +269,82 @@
                 startScreen.style.display = 'none';
                 gameStarted = true;
             });
+        }
+        
+        // Initialize islands feature
+        function initIslandsFeature() {
+            islandsButton = document.getElementById('islands-button');
+            islandsPanel = document.getElementById('islands-panel');
+            
+            islandsButton.addEventListener('click', toggleIslandsPanel);
+        }
+        
+        // Toggle islands panel visibility
+        function toggleIslandsPanel() {
+            isPanelVisible = !isPanelVisible;
+            islandsPanel.style.display = isPanelVisible ? 'block' : 'none';
+            
+            if (isPanelVisible) {
+                updateIslandsPanel();
+            }
+        }
+        
+        // Update islands panel with the closest three islands
+        function updateIslandsPanel() {
+            const islandsList = document.getElementById('islands-list');
+            islandsList.innerHTML = '';
+            
+            // Calculate distances for all islands from current position
+            const islandsWithDistances = islandsData.map(island => {
+                const distance = calculateDistance(
+                    { x: camera.position.x, y: camera.position.y, z: camera.position.z },
+                    island.coordinates
+                );
+                return {
+                    ...island,
+                    distance: distance
+                };
+            });
+            
+            // Sort islands by distance
+            islandsWithDistances.sort((a, b) => a.distance - b.distance);
+            
+            // Display the three closest islands
+            for (let i = 0; i < Math.min(3, islandsWithDistances.length); i++) {
+                const island = islandsWithDistances[i];
+                
+                const islandItem = document.createElement('div');
+                islandItem.className = 'island-item';
+                
+                const islandName = document.createElement('div');
+                islandName.className = 'island-name';
+                islandName.textContent = island.name;
+                
+                const islandDistance = document.createElement('div');
+                islandDistance.className = 'island-distance';
+                islandDistance.textContent = `Distance: ${island.distance.toFixed(1)} nautical miles`;
+                
+                const islandDescription = document.createElement('div');
+                islandDescription.className = 'island-description';
+                islandDescription.textContent = island.description;
+                
+                islandItem.appendChild(islandName);
+                islandItem.appendChild(islandDistance);
+                islandItem.appendChild(islandDescription);
+                
+                islandsList.appendChild(islandItem);
+            }
+        }
+        
+        // Calculate distance between two points in 3D space
+        function calculateDistance(pos1, pos2) {
+            // Calculate Euclidean distance
+            const dx = pos2.x - pos1.x;
+            const dy = pos2.y - pos1.y;
+            const dz = pos2.z - pos1.z;
+            
+            // Convert to nautical miles (for game purposes)
+            return Math.sqrt(dx*dx + dy*dy + dz*dz) / 5;
         }
         
         // Handle key down events
@@ -592,6 +770,11 @@
                 
                 // Check if looking at island
                 checkLookingAtIsland();
+                
+                // Update islands panel if visible
+                if (isPanelVisible) {
+                    updateIslandsPanel();
+                }
             }
             
             renderer.render(scene, camera);
