@@ -1,1632 +1,2023 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Going Merry Island View</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
-        body {
-            margin: 0;
-            overflow: hidden;
-            font-family: Arial, sans-serif;
-        }
-        #info-panel {
-            position: absolute;
-            right: 20px;
-            top: 20px;
-            width: 300px;
-            background-color: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 15px;
-            border-radius: 10px;
-            display: none;
-            z-index: 100;
-        }
-        #island-image {
-            width: 100%;
-            height: 150px;
-            background-color: #3498db;
-            margin-bottom: 10px;
-            background-image: url('/api/placeholder/300/150');
-            background-size: cover;
-            border-radius: 5px;
-        }
-        #island-description {
-            font-size: 14px;
-            line-height: 1.4;
-        }
-        #controls-info {
-            position: absolute;
-            left: 20px;
-            bottom: 20px;
-            background-color: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 10px;
-            border-radius: 5px;
-            font-size: 12px;
-        }
-        #start-screen {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-        #start-button {
-            padding: 15px 30px;
-            font-size: 20px;
-            background-color: #3498db;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        #start-instructions {
-            color: white;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        /* Islands Button and Panel Styles */
-        #islands-button {
-            position: absolute;
-            left: 20px;
-            top: 20px;
-            background-color: #3498db;
-            color: white;
-            padding: 10px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            z-index: 100;
-            font-weight: bold;
-            user-select: none;
-        }
-        #islands-button:hover {
-            background-color: #2980b9;
-        }
-        #islands-panel {
-            position: absolute;
-            left: 20px;
-            top: 70px;
-            width: 300px;
-            max-height: 70vh; /* Limit height to 70% of viewport height */
-            background-color: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 15px;
-            border-radius: 10px;
-            display: none;
-            z-index: 100;
-            overflow: hidden; /* Hide overflow for the panel itself */
-        }
-        #islands-list {
-            max-height: calc(70vh - 70px); /* Account for padding and header */
-            overflow-y: auto; /* Enable vertical scrolling */
-            padding-right: 5px; /* Add a bit of padding for the scrollbar */
-        }
-        /* Styling for the scrollbar */
-        #islands-list::-webkit-scrollbar {
-            width: 8px;
-        }
-        #islands-list::-webkit-scrollbar-track {
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 4px;
-        }
-        #islands-list::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 4px;
-        }
-        #islands-list::-webkit-scrollbar-thumb:hover {
-            background: rgba(255, 255, 255, 0.5);
-        }
-        .island-item {
-            margin-bottom: 15px;
-            padding: 8px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-            cursor: pointer;
-            transition: background-color 0.3s;
-            border-radius: 5px;
-        }
-        .island-item:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-        .island-item:active {
-            background-color: rgba(255, 255, 255, 0.3);
-        }
-        .island-item:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
-        }
-        .island-name {
-            font-weight: bold;
-            font-size: 16px;
-            margin-bottom: 5px;
-        }
-        .island-distance {
-            font-size: 12px;
-            color: #3498db;
-            margin-bottom: 5px;
-        }
-        .island-description {
-            font-size: 14px;
-            margin-top: 5px;
-        }
-        #travel-notification {
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            background-color: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 20px;
-            border-radius: 10px;
-            font-size: 20px;
-            display: none;
-            z-index: 200;
-            text-align: center;
-        }
+      body {
+        margin: 0;
+        overflow: hidden;
+        font-family: Arial, sans-serif;
+      }
+      #info-panel {
+        position: absolute;
+        right: 20px;
+        top: 20px;
+        width: 300px;
+        background-color: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 15px;
+        border-radius: 10px;
+        display: none;
+        z-index: 100;
+      }
+      #island-image {
+        width: 100%;
+        height: 150px;
+        background-color: #3498db;
+        margin-bottom: 10px;
+        background-image: url("/api/placeholder/300/150");
+        background-size: cover;
+        border-radius: 5px;
+      }
+      #island-description {
+        font-size: 14px;
+        line-height: 1.4;
+      }
+      #controls-info {
+        position: absolute;
+        left: 20px;
+        bottom: 20px;
+        background-color: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 10px;
+        border-radius: 5px;
+        font-size: 12px;
+      }
+      #start-screen {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+      }
+      #start-button {
+        padding: 15px 30px;
+        font-size: 20px;
+        background-color: #3498db;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      #start-instructions {
+        color: white;
+        text-align: center;
+        margin-bottom: 20px;
+      }
+      /* Islands Button and Panel Styles */
+      #islands-button {
+        position: absolute;
+        left: 20px;
+        top: 20px;
+        background-color: #3498db;
+        color: white;
+        padding: 10px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        z-index: 100;
+        font-weight: bold;
+        user-select: none;
+      }
+      #islands-button:hover {
+        background-color: #2980b9;
+      }
+      #islands-panel {
+        position: absolute;
+        left: 20px;
+        top: 70px;
+        width: 300px;
+        max-height: 70vh; /* Limit height to 70% of viewport height */
+        background-color: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 15px;
+        border-radius: 10px;
+        display: none;
+        z-index: 100;
+        overflow: hidden; /* Hide overflow for the panel itself */
+      }
+      #islands-list {
+        max-height: calc(70vh - 70px); /* Account for padding and header */
+        overflow-y: auto; /* Enable vertical scrolling */
+        padding-right: 5px; /* Add a bit of padding for the scrollbar */
+      }
+      /* Styling for the scrollbar */
+      #islands-list::-webkit-scrollbar {
+        width: 8px;
+      }
+      #islands-list::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 4px;
+      }
+      #islands-list::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 4px;
+      }
+      #islands-list::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.5);
+      }
+      .island-item {
+        margin-bottom: 15px;
+        padding: 8px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        cursor: pointer;
+        transition: background-color 0.3s;
+        border-radius: 5px;
+      }
+      .island-item:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+      }
+      .island-item:active {
+        background-color: rgba(255, 255, 255, 0.3);
+      }
+      .island-item:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+      }
+      .island-name {
+        font-weight: bold;
+        font-size: 16px;
+        margin-bottom: 5px;
+      }
+      .island-distance {
+        font-size: 12px;
+        color: #3498db;
+        margin-bottom: 5px;
+      }
+      .island-description {
+        font-size: 14px;
+        margin-top: 5px;
+      }
+      #travel-notification {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        background-color: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 20px;
+        border-radius: 10px;
+        font-size: 20px;
+        display: none;
+        z-index: 200;
+        text-align: center;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div id="start-screen">
-        <div>
-            <div id="start-instructions">
-                <h2>Going Merry Island Adventure</h2>
-                <p>Controls:<br>
-                W, A, S, D - Move around<br>
-                Arrow keys - Look around</p>
-            </div>
-            <button id="start-button">Start Adventure</button>
+      <div>
+        <div id="start-instructions">
+          <h2>Going Merry Island Adventure</h2>
+          <p>
+            Controls:<br />
+            W, A, S, D - Move around<br />
+            Arrow keys - Look around
+          </p>
         </div>
+        <button id="start-button">Start Adventure</button>
+      </div>
     </div>
-    
+
     <!-- Islands Button and Panel -->
     <div id="islands-button">All Islands</div>
     <div id="islands-panel">
-        <h3>Choose Your Destination</h3>
-        <div id="islands-list"></div>
-    </div>
-    
-    <div id="info-panel">
-        <div id="island-image"></div>
-        <div id="island-name" style="font-weight: bold; font-size: 18px; margin-bottom: 8px;"></div>
-        <div id="island-description"></div>
-    </div>
-    
-    <div id="travel-notification">
-        Setting sail for new island...
-    </div>
-    
-    <div id="controls-info">
-        W, A, S, D - Move | Arrow Keys - Look around
+      <h3>Choose Your Destination</h3>
+      <div id="islands-list"></div>
     </div>
 
+    <div id="info-panel">
+      <div id="island-image"></div>
+      <div
+        id="island-name"
+        style="font-weight: bold; font-size: 18px; margin-bottom: 8px"
+      ></div>
+      <div id="island-description"></div>
+    </div>
+
+    <div id="travel-notification">Setting sail for new island...</div>
+
+    <div id="controls-info">W, A, S, D - Move | Arrow Keys - Look around</div>
+
     <script>
-        // Main Three.js variables
-        let scene, camera, renderer;
-        let moveForward = false;
-        let moveBackward = false;
-        let moveLeft = false;
-        let moveRight = false;
-        let lookUp = false;
-        let lookDown = false;
-        let lookLeft = false;
-        let lookRight = false;
-        let velocity = new THREE.Vector3();
-        let currentIslandMesh;
-        let infoPanel;
-        let lookingAtIsland = false;
-        let gameStarted = false;
-        let isTravel = false;
-        let ship;
-        let currentIslandIndex = 0; // Default is Katori Island (first in array)
-        
-        // Islands feature variables
-        let islandsButton, islandsPanel, travelNotification;
-        let isPanelVisible = false;
-        
-        // Island data with coordinates in 3D space (x, y, z) and design info
-        const islandsData = [
-            {
-                name: "Katori Island",
-                coordinates: { x: 0, y: 0, z: 150 },
-                description: "A lush tropical paradise with dense forests, pristine beaches, and mysterious ancient ruins. Legend says a great treasure is hidden somewhere on this island.",
-                design: {
-                    baseColor: 0x228B22, // Forest green
-                    shape: "cone",
-                    features: [
-                        { type: "beach", color: 0xc2b280 },
-                        { type: "forest", color: 0x228B22 },
-                        { type: "ruins", color: 0x808080 }
-                    ]
-                }
-            },
-            {
-                name: "Drum Island",
-                coordinates: { x: -200, y: -10, z: 100 },
-                description: "A winter island known for its snowy mountains and advanced medical knowledge. Home to Dr. Kureha and the renowned doctor Chopper.",
-                design: {
-                    baseColor: 0xf0f0f0, // Snow white
-                    shape: "mountains",
-                    features: [
-                        { type: "snow", color: 0xffffff },
-                        { type: "mountain", color: 0xd3d3d3 },
-                        { type: "medical", color: 0xff6347 }
-                    ]
-                }
-            },
-            {
-                name: "Alabasta",
-                coordinates: { x: 300, y: 5, z: -50 },
-                description: "A desert kingdom ruled by the Nefertari family. Famous for its cultural heritage, ancient ruins, and the legendary city of Rainbase.",
-                design: {
-                    baseColor: 0xd2b48c, // Sandy tan
-                    shape: "flat",
-                    features: [
-                        { type: "desert", color: 0xd2b48c },
-                        { type: "city", color: 0xcd853f },
-                        { type: "pyramid", color: 0xf5deb3 }
-                    ]
-                }
-            },
-            {
-                name: "Water 7",
-                coordinates: { x: 150, y: 0, z: 300 },
-                description: "A city built on water, famous for its shipwrights and the Galley-La Company. Known as the jewel of the Grand Line's shipbuilding industry.",
-                design: {
-                    baseColor: 0x4682b4, // Steel blue
-                    shape: "fountain",
-                    features: [
-                        { type: "water", color: 0x00bfff },
-                        { type: "buildings", color: 0xf5f5f5 },
-                        { type: "canals", color: 0x87ceeb }
-                    ]
-                }
-            },
-            {
-                name: "Sabaody Archipelago",
-                coordinates: { x: -100, y: 15, z: -200 },
-                description: "An archipelago of massive mangrove trees, serving as a gateway to the New World. Famous for its amusement park and the lawless areas.",
-                design: {
-                    baseColor: 0x32cd32, // Lime green
-                    shape: "bubbles",
-                    features: [
-                        { type: "mangrove", color: 0x228b22 },
-                        { type: "bubbles", color: 0x98fb98 },
-                        { type: "amusement", color: 0xff69b4 }
-                    ]
-                }
-            },
-            {
-                name: "Punk Hazard",
-                coordinates: { x: 250, y: -5, z: -150 },
-                description: "A deadly island divided between extreme hot and cold. Once a government research facility, now abandoned and highly dangerous.",
-                design: {
-                    baseColor: 0x808080, // Gray
-                    shape: "divided",
-                    features: [
-                        { type: "fire", color: 0xff4500 },
-                        { type: "ice", color: 0xadd8e6 },
-                        { type: "lab", color: 0x696969 }
-                    ]
-                }
-            },
-            {
-                name: "Dressrosa",
-                coordinates: { x: -300, y: 8, z: -100 },
-                description: "A kingdom known for its passionate citizens, beautiful architecture, and the Corrida Colosseum. Ruled by the Donquixote family.",
-                design: {
-                    baseColor: 0xda70d6, // Orchid
-                    shape: "hilly",
-                    features: [
-                        { type: "buildings", color: 0xffd700 },
-                        { type: "colosseum", color: 0xd2691e },
-                        { type: "flowers", color: 0xff69b4 }
-                    ]
-                }
-            }
-        ];
-        
-        // Camera controls
-        let cameraRotation = {
-            x: 0,
-            y: 0
+      // Main Three.js variables
+      let scene, camera, renderer;
+      let moveForward = false;
+      let moveBackward = false;
+      let moveLeft = false;
+      let moveRight = false;
+      let lookUp = false;
+      let lookDown = false;
+      let lookLeft = false;
+      let lookRight = false;
+      let velocity = new THREE.Vector3();
+      let currentIslandMesh;
+      let infoPanel;
+      let lookingAtIsland = false;
+      let gameStarted = false;
+      let isTravel = false;
+      let ship;
+      let currentIslandIndex = 0; // Default is Katori Island (first in array)
+
+      // Islands feature variables
+      let islandsButton, islandsPanel, travelNotification;
+      let isPanelVisible = false;
+
+      // Update the controls info to reflect the new controls
+      document.getElementById("controls-info").textContent =
+        "W, A, S, D - Move | Arrow Keys - Look around";
+
+      // Also update the start instructions to match
+      document.querySelector("#start-instructions p").innerHTML =
+        "Controls:<br />" +
+        "W, A, S, D - Move around<br />" +
+        "Arrow keys - Look around";
+
+      // Island data with coordinates in 3D space (x, y, z) and design info
+      const islandsData = [
+        {
+          name: "Katori Island",
+          coordinates: { x: 0, y: 0, z: 150 },
+          description:
+            "A lush tropical paradise rising from the sea in a conical shape, covered with dense, emerald-green forests. Pristine sandy beaches surround the island, and hidden among the verdant trees are mysterious gray ancient ruins, rumored to hold a legendary treasure.",
+          design: {
+            baseColor: 0x228b22, // Forest green
+            shape: "cone",
+            features: [
+              { type: "beach", color: 0xc2b280 },
+              { type: "forest", color: 0x228b22 },
+              { type: "ruins", color: 0x808080 },
+            ],
+          },
+        },
+        {
+          name: "Drum Island",
+          coordinates: { x: -200, y: -10, z: 100 },
+          description:
+            "A winter island characterized by towering, snow-capped mountains blanketed in pure white snow. Renowned for advanced medical expertise, brightly colored medical facilities stand out vividly against the icy landscape. Home to the famous Dr. Kureha and doctor Chopper.",
+          design: {
+            baseColor: 0xf0f0f0, // Snow white
+            shape: "mountains",
+            features: [
+              { type: "snow", color: 0xffffff },
+              { type: "mountain", color: 0xd3d3d3 },
+              { type: "medical", color: 0xff6347 },
+            ],
+          },
+        },
+        {
+          name: "Alabasta",
+          coordinates: { x: 300, y: 5, z: -50 },
+          description:
+            "A vast desert kingdom known for its expansive sandy terrain and rich cultural heritage. Cities built from golden-brown stone rise amidst the dunes, while majestic wheat-colored pyramids stand as ancient monuments, including the legendary city of Rainbase, ruled by the Nefertari family.",
+          design: {
+            baseColor: 0xd2b48c, // Sandy tan
+            shape: "flat",
+            features: [
+              { type: "desert", color: 0xd2b48c },
+              { type: "city", color: 0xcd853f },
+              { type: "pyramid", color: 0xf5deb3 },
+            ],
+          },
+        },
+        {
+          name: "Water 7",
+          coordinates: { x: 150, y: 0, z: 300 },
+          description:
+            "A vibrant city constructed entirely on water, resembling a grand fountain. Famous for its canals of crystal-clear blue waters winding through pristine white buildings, it's the thriving heart of the Grand Line's shipbuilding industry, home to the renowned Galley-La Company.",
+          design: {
+            baseColor: 0x4682b4, // Steel blue
+            shape: "fountain",
+            features: [
+              { type: "water", color: 0x00bfff },
+              { type: "buildings", color: 0xf5f5f5 },
+              { type: "canals", color: 0x87ceeb },
+            ],
+          },
+        },
+        {
+          name: "Sabaody Archipelago",
+          coordinates: { x: -100, y: 15, z: -200 },
+          description:
+            "An archipelago of massive mangrove trees and enchanting giant bubbles floating gently in the air. This verdant gateway to the New World features vibrant amusement parks highlighted by striking hot-pink attractions, yet conceals lawless zones beneath its lush beauty.",
+          design: {
+            baseColor: 0x32cd32, // Lime green
+            shape: "bubbles",
+            features: [
+              { type: "mangrove", color: 0x228b22 },
+              { type: "bubbles", color: 0x98fb98 },
+              { type: "amusement", color: 0xff69b4 },
+            ],
+          },
+        },
+        {
+          name: "Punk Hazard",
+          coordinates: { x: 250, y: -5, z: -150 },
+          description:
+            "A hazardous, abandoned island sharply divided between fiery, volcanic landscapes and freezing, icy wastelands. Once a secretive government research facility, it's now desolate and filled with dangers, including the remnants of gray laboratories hidden between extremes of fire and ice.",
+          design: {
+            baseColor: 0x808080, // Gray
+            shape: "divided",
+            features: [
+              { type: "fire", color: 0xff4500 },
+              { type: "ice", color: 0xadd8e6 },
+              { type: "lab", color: 0x696969 },
+            ],
+          },
+        },
+        {
+          name: "Dressrosa",
+          coordinates: { x: -300, y: 8, z: -100 },
+          description:
+            "A vibrant, hilly kingdom famous for its passionate citizens, picturesque golden architecture, and lush fields of colorful flowers. Dominated by the iconic Corrida Colosseum with its distinctive reddish-brown walls, Dressrosa is ruled by the charismatic Donquixote family.",
+          design: {
+            baseColor: 0xda70d6, // Orchid
+            shape: "hilly",
+            features: [
+              { type: "buildings", color: 0xffd700 },
+              { type: "colosseum", color: 0xd2691e },
+              { type: "flowers", color: 0xff69b4 },
+            ],
+          },
+        },
+      ];
+
+      // Camera controls
+      let cameraRotation = {
+        x: 0,
+        y: 0,
+      };
+
+      // Initialize the scene
+      function init() {
+        // Scene setup
+        scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x87ceeb); // Sky blue
+        scene.fog = new THREE.FogExp2(0x87ceeb, 0.005);
+
+        // Camera setup - positioned to the left of the sheep's head at the front of the ship
+        camera = new THREE.PerspectiveCamera(
+          75,
+          window.innerWidth / window.innerHeight,
+          1,
+          1000
+        );
+        camera.position.set(6, 15, 18); // Positioned to the left of the figurehead
+        // Set initial camera rotation to look back at the ship
+        cameraRotation.y = Math.PI; // Looking backward (toward the ship)
+
+        // Lighting
+        const ambientLight = new THREE.AmbientLight(0x404040, 2);
+        scene.add(ambientLight);
+
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+        directionalLight.position.set(1, 1, 0.5).normalize();
+        scene.add(directionalLight);
+
+        // Renderer
+        renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        document.body.appendChild(renderer.domElement);
+
+        // Key controls
+        document.addEventListener("keydown", onKeyDown);
+        document.addEventListener("keyup", onKeyUp);
+
+        // Info panel
+        infoPanel = document.getElementById("info-panel");
+        document.getElementById("island-name").textContent =
+          islandsData[currentIslandIndex].name;
+        document.getElementById("island-description").textContent =
+          islandsData[currentIslandIndex].description;
+
+        // Travel notification
+        travelNotification = document.getElementById("travel-notification");
+
+        // Create objects in the scene
+        createObjects();
+
+        // Initialize the islands feature
+        initIslandsFeature();
+
+        // Handle window resize
+        window.addEventListener("resize", onWindowResize);
+
+        // Start screen
+        const startScreen = document.getElementById("start-screen");
+        const startButton = document.getElementById("start-button");
+
+        startButton.addEventListener("click", () => {
+          startScreen.style.display = "none";
+          gameStarted = true;
+        });
+      }
+
+      // Initialize islands feature
+      function initIslandsFeature() {
+        console.log("Initializing islands feature");
+        islandsButton = document.getElementById("islands-button");
+        islandsPanel = document.getElementById("islands-panel");
+        travelNotification = document.getElementById("travel-notification");
+
+        if (!islandsButton || !islandsPanel || !travelNotification) {
+          console.error("Failed to find required DOM elements");
+          return;
+        }
+
+        islandsButton.onclick = function () {
+          console.log("Islands button clicked");
+          toggleIslandsPanel();
         };
-        
-        // Initialize the scene
-        function init() {
-            // Scene setup
-            scene = new THREE.Scene();
-            scene.background = new THREE.Color(0x87CEEB); // Sky blue
-            scene.fog = new THREE.FogExp2(0x87CEEB, 0.005);
-            
-            // Camera setup - positioned to the left of the sheep's head at the front of the ship
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
-            camera.position.set(6, 15, 18); // Positioned to the left of the figurehead
-            // Set initial camera rotation to look back at the ship
-            cameraRotation.y = Math.PI; // Looking backward (toward the ship)
-            
-            // Lighting
-            const ambientLight = new THREE.AmbientLight(0x404040, 2);
-            scene.add(ambientLight);
-            
-            const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-            directionalLight.position.set(1, 1, 0.5).normalize();
-            scene.add(directionalLight);
-            
-            // Renderer
-            renderer = new THREE.WebGLRenderer({ antialias: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(window.devicePixelRatio);
-            document.body.appendChild(renderer.domElement);
-            
-            // Key controls
-            document.addEventListener('keydown', onKeyDown);
-            document.addEventListener('keyup', onKeyUp);
-            
-            // Info panel
-            infoPanel = document.getElementById('info-panel');
-            document.getElementById('island-name').textContent = islandsData[currentIslandIndex].name;
-            document.getElementById('island-description').textContent = islandsData[currentIslandIndex].description;
-            
-            // Travel notification
-            travelNotification = document.getElementById('travel-notification');
-            
-            // Create objects in the scene
-            createObjects();
-            
-            // Initialize the islands feature
-            initIslandsFeature();
-            
-            // Handle window resize
-            window.addEventListener('resize', onWindowResize);
-            
-            // Start screen
-            const startScreen = document.getElementById('start-screen');
-            const startButton = document.getElementById('start-button');
-            
-            startButton.addEventListener('click', () => {
-                startScreen.style.display = 'none';
-                gameStarted = true;
-            });
+      }
+
+      // Toggle islands panel visibility
+      function toggleIslandsPanel() {
+        console.log("Toggling islands panel");
+        isPanelVisible = !isPanelVisible;
+        islandsPanel.style.display = isPanelVisible ? "block" : "none";
+
+        if (isPanelVisible) {
+          // Only update the panel once when it becomes visible
+          updateIslandsPanel();
         }
-        
-        // Initialize islands feature
-        function initIslandsFeature() {
-            console.log("Initializing islands feature");
-            islandsButton = document.getElementById('islands-button');
-            islandsPanel = document.getElementById('islands-panel');
-            travelNotification = document.getElementById('travel-notification');
-            
-            if (!islandsButton || !islandsPanel || !travelNotification) {
-                console.error("Failed to find required DOM elements");
-                return;
-            }
-            
-            islandsButton.onclick = function() {
-                console.log("Islands button clicked");
-                toggleIslandsPanel();
-            };
+      }
+
+      // Update islands panel with all islands sorted by distance
+      function updateIslandsPanel() {
+        console.log("Updating islands panel");
+        const islandsList = document.getElementById("islands-list");
+        if (!islandsList) {
+          console.error("Could not find islands-list element");
+          return;
         }
-        
-        // Toggle islands panel visibility
-        function toggleIslandsPanel() {
-            console.log("Toggling islands panel");
-            isPanelVisible = !isPanelVisible;
-            islandsPanel.style.display = isPanelVisible ? 'block' : 'none';
-            
-            if (isPanelVisible) {
-                // Only update the panel once when it becomes visible
-                updateIslandsPanel();
-            }
-        }
-        
-        // Update islands panel with all islands sorted by distance
-        function updateIslandsPanel() {
-            console.log("Updating islands panel");
-            const islandsList = document.getElementById('islands-list');
-            if (!islandsList) {
-                console.error("Could not find islands-list element");
-                return;
-            }
-            
-            islandsList.innerHTML = '';
-            
-            // Add a heading showing current location
-            const currentLocationElement = document.createElement('div');
-            currentLocationElement.style.marginBottom = '15px';
-            currentLocationElement.style.padding = '8px';
-            currentLocationElement.style.backgroundColor = 'rgba(0, 0, 0, 0.3)';
-            currentLocationElement.style.borderRadius = '5px';
-            currentLocationElement.style.textAlign = 'center';
-            currentLocationElement.style.position = 'sticky';
-            currentLocationElement.style.top = '0';
-            
-            currentLocationElement.innerHTML = `
+
+        islandsList.innerHTML = "";
+
+        // Add a heading showing current location
+        const currentLocationElement = document.createElement("div");
+        currentLocationElement.style.marginBottom = "15px";
+        currentLocationElement.style.padding = "8px";
+        currentLocationElement.style.backgroundColor = "rgba(0, 0, 0, 0.3)";
+        currentLocationElement.style.borderRadius = "5px";
+        currentLocationElement.style.textAlign = "center";
+        currentLocationElement.style.position = "sticky";
+        currentLocationElement.style.top = "0";
+
+        currentLocationElement.innerHTML = `
                 <div style="font-weight: bold;">Current Location</div>
                 <div>${islandsData[currentIslandIndex].name}</div>
             `;
-            
-            islandsList.appendChild(currentLocationElement);
-            
-            // Calculate distances for all islands from current position
-            const islandsWithDistances = islandsData.map((island, index) => {
-                const distance = calculateDistance(
-                    { x: camera.position.x, y: camera.position.y, z: camera.position.z },
-                    island.coordinates
-                );
-                return {
-                    ...island,
-                    distance: distance,
-                    index: index
-                };
-            });
-            
-            // Sort islands by distance
-            islandsWithDistances.sort((a, b) => a.distance - b.distance);
-            
-            // Display all islands except the current one
-            islandsWithDistances.forEach(island => {
-                // Skip the current island
-                if (island.index === currentIslandIndex) {
-                    return;
-                }
-                
-                const islandItem = document.createElement('div');
-                islandItem.className = 'island-item';
-                islandItem.setAttribute('data-index', island.index);
-                
-                const islandName = document.createElement('div');
-                islandName.className = 'island-name';
-                islandName.textContent = island.name;
-                
-                const islandDistance = document.createElement('div');
-                islandDistance.className = 'island-distance';
-                islandDistance.textContent = `Distance: ${island.distance.toFixed(1)} nautical miles`;
-                
-                const islandDescription = document.createElement('div');
-                islandDescription.className = 'island-description';
-                islandDescription.textContent = island.description;
-                
-                islandItem.appendChild(islandName);
-                islandItem.appendChild(islandDistance);
-                islandItem.appendChild(islandDescription);
-                
-                // Create a clearly defined button for traveling to this island
-                const travelButton = document.createElement('button');
-                travelButton.textContent = `Travel to ${island.name}`;
-                travelButton.style.marginTop = '10px';
-                travelButton.style.padding = '8px 15px';
-                travelButton.style.backgroundColor = '#3498db';
-                travelButton.style.color = 'white';
-                travelButton.style.border = 'none';
-                travelButton.style.borderRadius = '5px';
-                travelButton.style.cursor = 'pointer';
-                travelButton.style.width = '100%';
-                
-                // Add hover effect
-                travelButton.onmouseover = function() {
-                    this.style.backgroundColor = '#2980b9';
-                };
-                travelButton.onmouseout = function() {
-                    this.style.backgroundColor = '#3498db';
-                };
-                
-                // Add click handler
-                travelButton.onclick = function() {
-                    console.log(`Travel button clicked for ${island.name} (index ${island.index})`);
-                    startTravelToIsland(island.index);
-                };
-                
-                islandItem.appendChild(travelButton);
-                islandsList.appendChild(islandItem);
-            });
+
+        islandsList.appendChild(currentLocationElement);
+
+        // Calculate distances for all islands from current position
+        const islandsWithDistances = islandsData.map((island, index) => {
+          const distance = calculateDistance(
+            {
+              x: camera.position.x,
+              y: camera.position.y,
+              z: camera.position.z,
+            },
+            island.coordinates
+          );
+          return {
+            ...island,
+            distance: distance,
+            index: index,
+          };
+        });
+
+        // Sort islands by distance
+        islandsWithDistances.sort((a, b) => a.distance - b.distance);
+
+        // Display all islands except the current one
+        islandsWithDistances.forEach((island) => {
+          // Skip the current island
+          if (island.index === currentIslandIndex) {
+            return;
+          }
+
+          const islandItem = document.createElement("div");
+          islandItem.className = "island-item";
+          islandItem.setAttribute("data-index", island.index);
+
+          const islandName = document.createElement("div");
+          islandName.className = "island-name";
+          islandName.textContent = island.name;
+
+          const islandDistance = document.createElement("div");
+          islandDistance.className = "island-distance";
+          islandDistance.textContent = `Distance: ${island.distance.toFixed(
+            1
+          )} nautical miles`;
+
+          const islandDescription = document.createElement("div");
+          islandDescription.className = "island-description";
+          islandDescription.textContent = island.description;
+
+          islandItem.appendChild(islandName);
+          islandItem.appendChild(islandDistance);
+          islandItem.appendChild(islandDescription);
+
+          // Create a clearly defined button for traveling to this island
+          const travelButton = document.createElement("button");
+          travelButton.textContent = `Travel to ${island.name}`;
+          travelButton.style.marginTop = "10px";
+          travelButton.style.padding = "8px 15px";
+          travelButton.style.backgroundColor = "#3498db";
+          travelButton.style.color = "white";
+          travelButton.style.border = "none";
+          travelButton.style.borderRadius = "5px";
+          travelButton.style.cursor = "pointer";
+          travelButton.style.width = "100%";
+
+          // Add hover effect
+          travelButton.onmouseover = function () {
+            this.style.backgroundColor = "#2980b9";
+          };
+          travelButton.onmouseout = function () {
+            this.style.backgroundColor = "#3498db";
+          };
+
+          // Add click handler
+          travelButton.onclick = function () {
+            console.log(
+              `Travel button clicked for ${island.name} (index ${island.index})`
+            );
+            startTravelToIsland(island.index);
+          };
+
+          islandItem.appendChild(travelButton);
+          islandsList.appendChild(islandItem);
+        });
+      }
+
+      // Simplified function to initiate travel
+      function startTravelToIsland(islandIndex) {
+        console.log(`Starting travel to island index ${islandIndex}`);
+
+        if (isTravel) {
+          console.log("Travel already in progress");
+          return;
         }
-        
-        // Simplified function to initiate travel
-        function startTravelToIsland(islandIndex) {
-            console.log(`Starting travel to island index ${islandIndex}`);
-            
-            if (isTravel) {
-                console.log("Travel already in progress");
-                return;
-            }
-            
-            if (islandIndex === currentIslandIndex) {
-                console.log("Already at this island");
-                return;
-            }
-            
-            isTravel = true;
-            isPanelVisible = false;
-            islandsPanel.style.display = 'none';
-            
-            // Show travel notification
-            travelNotification.textContent = `Setting sail for ${islandsData[islandIndex].name}...`;
-            travelNotification.style.display = 'block';
-            
-            console.log("Starting animation in 500ms");
-            // Use setTimeout to ensure the UI updates before starting animation
-            setTimeout(() => {
-                performTravel(islandIndex);
-            }, 500);
+
+        if (islandIndex === currentIslandIndex) {
+          console.log("Already at this island");
+          return;
         }
-        
-        // Function that actually performs the travel animation
-        function performTravel(islandIndex) {
-            console.log(`Performing travel to island ${islandsData[islandIndex].name}`);
-            
-            // Store target position and start position for ship
-            const targetPosition = {
-                x: islandsData[islandIndex].coordinates.x,
-                y: 0,
-                z: islandsData[islandIndex].coordinates.z
-            };
-            
-            const startPosition = {
-                x: ship.position.x,
-                y: ship.position.y,
-                z: ship.position.z
-            };
-            
-            console.log(`Travel from (${startPosition.x}, ${startPosition.z}) to (${targetPosition.x}, ${targetPosition.z})`);
-            
-            // Remove current island and features
-            if (currentIslandMesh) {
-                scene.remove(currentIslandMesh);
-                currentIslandMesh = null;
-            }
-            
-            for (let i = scene.children.length - 1; i >= 0; i--) {
-                const child = scene.children[i];
-                if (child.userData && child.userData.islandFeature) {
-                    scene.remove(child);
-                }
-            }
-            
-            // Set a fixed duration for travel animation
-            const duration = 3000; // 3 seconds
-            const startTime = performance.now();
-            
-            function animateStep(currentTime) {
-                const elapsedTime = currentTime - startTime;
-                const progress = Math.min(elapsedTime / duration, 1);
-                
-                // Calculate new positions with linear interpolation
-                const newX = startPosition.x + (targetPosition.x - startPosition.x) * progress;
-                const newZ = startPosition.z + (targetPosition.z - startPosition.z) * progress;
-                
-                // Update ship position
-                ship.position.set(newX, 0, newZ);
-                
-                // Update camera position relative to ship
-                camera.position.set(
-                    newX + 6,  // X offset
-                    15,        // Fixed height
-                    newZ + 18  // Z offset
-                );
-                
-                if (progress < 1) {
-                    requestAnimationFrame(animateStep);
-                } else {
-                    console.log("Travel animation complete");
-                    completeTravel(islandIndex);
-                }
-            }
-            
-            console.log("Starting animation frames");
+
+        isTravel = true;
+        isPanelVisible = false;
+        islandsPanel.style.display = "none";
+
+        // Show travel notification
+        travelNotification.textContent = `Setting sail for ${islandsData[islandIndex].name}...`;
+        travelNotification.style.display = "block";
+
+        console.log("Starting animation in 500ms");
+        // Use setTimeout to ensure the UI updates before starting animation
+        setTimeout(() => {
+          performTravel(islandIndex);
+        }, 500);
+      }
+
+      // Function that actually performs the travel animation
+      function performTravel(islandIndex) {
+        console.log(
+          `Performing travel to island ${islandsData[islandIndex].name}`
+        );
+
+        // Store target position and start position for ship
+        const targetPosition = {
+          x: islandsData[islandIndex].coordinates.x,
+          y: 0,
+          z: islandsData[islandIndex].coordinates.z,
+        };
+
+        const startPosition = {
+          x: ship.position.x,
+          y: ship.position.y,
+          z: ship.position.z,
+        };
+
+        console.log(
+          `Travel from (${startPosition.x}, ${startPosition.z}) to (${targetPosition.x}, ${targetPosition.z})`
+        );
+
+        // Remove current island and features
+        if (currentIslandMesh) {
+          scene.remove(currentIslandMesh);
+          currentIslandMesh = null;
+        }
+
+        for (let i = scene.children.length - 1; i >= 0; i--) {
+          const child = scene.children[i];
+          if (child.userData && child.userData.islandFeature) {
+            scene.remove(child);
+          }
+        }
+
+        // Set a fixed duration for travel animation
+        const duration = 3000; // 3 seconds
+        const startTime = performance.now();
+
+        function animateStep(currentTime) {
+          const elapsedTime = currentTime - startTime;
+          const progress = Math.min(elapsedTime / duration, 1);
+
+          // Calculate new positions with linear interpolation
+          const newX =
+            startPosition.x + (targetPosition.x - startPosition.x) * progress;
+          const newZ =
+            startPosition.z + (targetPosition.z - startPosition.z) * progress;
+
+          // Update ship position
+          ship.position.set(newX, 0, newZ);
+
+          // Update camera position relative to ship
+          camera.position.set(
+            newX + 6, // X offset
+            15, // Fixed height
+            newZ + 18 // Z offset
+          );
+
+          if (progress < 1) {
             requestAnimationFrame(animateStep);
+          } else {
+            console.log("Travel animation complete");
+            completeTravel(islandIndex);
+          }
         }
-        
-        // Function to complete the travel process
-        function completeTravel(islandIndex) {
-            console.log(`Completing travel to island ${islandsData[islandIndex].name}`);
-            
-            // Reset ship position
-            ship.position.set(0, 0, 0);
-            
-            // Reset camera position
-            camera.position.set(6, 15, 18);
-            
-            // Update current island index
-            currentIslandIndex = islandIndex;
-            
-            // Create new island
-            createIsland(islandIndex);
-            
-            // Hide travel notification
-            travelNotification.style.display = 'none';
-            
-            // Update island information
-            document.getElementById('island-name').textContent = islandsData[currentIslandIndex].name;
-            document.getElementById('island-description').textContent = islandsData[currentIslandIndex].description;
-            
-            // Allow movement again
-            isTravel = false;
-            
-            console.log("Travel complete");
+
+        console.log("Starting animation frames");
+        requestAnimationFrame(animateStep);
+      }
+
+      // Function to complete the travel process
+      function completeTravel(islandIndex) {
+        console.log(
+          `Completing travel to island ${islandsData[islandIndex].name}`
+        );
+
+        // Reset ship position
+        ship.position.set(0, 0, 0);
+
+        // Reset camera position
+        camera.position.set(6, 15, 18);
+
+        // Update current island index
+        currentIslandIndex = islandIndex;
+
+        // Create new island
+        createIsland(islandIndex);
+
+        // Hide travel notification
+        travelNotification.style.display = "none";
+
+        // Update island information
+        document.getElementById("island-name").textContent =
+          islandsData[currentIslandIndex].name;
+        document.getElementById("island-description").textContent =
+          islandsData[currentIslandIndex].description;
+
+        // Allow movement again
+        isTravel = false;
+
+        console.log("Travel complete");
+      }
+
+      // Calculate distance between two points in 3D space
+      function calculateDistance(pos1, pos2) {
+        // Calculate Euclidean distance
+        const dx = pos2.x - pos1.x;
+        const dy = pos2.y - pos1.y;
+        const dz = pos2.z - pos1.z;
+
+        // Convert to nautical miles (for game purposes)
+        return Math.sqrt(dx * dx + dy * dy + dz * dz) / 5;
+      }
+
+      // Handle key down events
+      function onKeyDown(event) {
+        if (!gameStarted || isTravel) return;
+
+        switch (event.code) {
+          case "ArrowUp":
+            lookUp = true;
+            break;
+          case "ArrowDown":
+            lookDown = true;
+            break;
+          case "ArrowLeft":
+            lookLeft = true;
+            break;
+          case "ArrowRight":
+            lookRight = true;
+            break;
+          case "KeyW":
+            moveForward = true;
+            break;
+          case "KeyA":
+            moveLeft = true;
+            break;
+          case "KeyS":
+            moveBackward = true;
+            break;
+          case "KeyD":
+            moveRight = true;
+            break;
         }
-        
-        // Calculate distance between two points in 3D space
-        function calculateDistance(pos1, pos2) {
-            // Calculate Euclidean distance
-            const dx = pos2.x - pos1.x;
-            const dy = pos2.y - pos1.y;
-            const dz = pos2.z - pos1.z;
-            
-            // Convert to nautical miles (for game purposes)
-            return Math.sqrt(dx*dx + dy*dy + dz*dz) / 5;
+      }
+
+      // Handle key up events
+      function onKeyUp(event) {
+        if (!gameStarted || isTravel) return;
+
+        switch (event.code) {
+          case "ArrowUp":
+            lookUp = false;
+            break;
+          case "ArrowDown":
+            lookDown = false;
+            break;
+          case "ArrowLeft":
+            lookLeft = false;
+            break;
+          case "ArrowRight":
+            lookRight = false;
+            break;
+          case "KeyW":
+            moveForward = false;
+            break;
+          case "KeyA":
+            moveLeft = false;
+            break;
+          case "KeyS":
+            moveBackward = false;
+            break;
+          case "KeyD":
+            moveRight = false;
+            break;
         }
-        
-        // Handle key down events
-        function onKeyDown(event) {
-            if (!gameStarted || isTravel) return;
-            
-            switch(event.code) {
-                case 'ArrowUp':
-                    lookUp = true;
-                    break;
-                case 'ArrowDown':
-                    lookDown = true;
-                    break;
-                case 'ArrowLeft':
-                    lookLeft = true;
-                    break;
-                case 'ArrowRight':
-                    lookRight = true;
-                    break;
-                case 'KeyW':
-                    moveForward = true;
-                    break;
-                case 'KeyA':
-                    moveLeft = true;
-                    break;
-                case 'KeyS':
-                    moveBackward = true;
-                    break;
-                case 'KeyD':
-                    moveRight = true;
-                    break;
+      }
+
+      // Create objects for the scene
+      function createObjects() {
+        // Create ocean
+        const oceanGeometry = new THREE.PlaneGeometry(2000, 2000, 20, 20);
+        oceanGeometry.rotateX(-Math.PI / 2);
+
+        const oceanMaterial = new THREE.MeshStandardMaterial({
+          color: 0x0077be,
+          transparent: true,
+          opacity: 0.8,
+          side: THREE.DoubleSide,
+        });
+
+        const ocean = new THREE.Mesh(oceanGeometry, oceanMaterial);
+        ocean.position.y = 0;
+        scene.add(ocean);
+
+        // Create the current island
+        createIsland(currentIslandIndex);
+
+        // Create the Going Merry ship
+        ship = createGoingMerry();
+      }
+
+      // Create an island based on its design data
+      function createIsland(islandIndex) {
+        const island = islandsData[islandIndex];
+        const design = island.design;
+
+        let islandGeometry;
+
+        // Create island with the appropriate shape
+        switch (design.shape) {
+          case "cone":
+            islandGeometry = new THREE.ConeGeometry(100, 50, 5);
+            break;
+          case "mountains":
+            // Creates multiple peaks using a specially deformed geometry
+            islandGeometry = new THREE.ConeGeometry(100, 80, 6);
+            // Add random height to vertices
+            for (
+              let i = 0;
+              i < islandGeometry.attributes.position.array.length;
+              i += 3
+            ) {
+              if (islandGeometry.attributes.position.array[i + 1] > 0) {
+                islandGeometry.attributes.position.array[i + 1] +=
+                  Math.random() * 20 - 10;
+              }
             }
-        }
-        
-        // Handle key up events
-        function onKeyUp(event) {
-            if (!gameStarted || isTravel) return;
-            
-            switch(event.code) {
-                case 'ArrowUp':
-                    lookUp = false;
-                    break;
-                case 'ArrowDown':
-                    lookDown = false;
-                    break;
-                case 'ArrowLeft':
-                    lookLeft = false;
-                    break;
-                case 'ArrowRight':
-                    lookRight = false;
-                    break;
-                case 'KeyW':
-                    moveForward = false;
-                    break;
-                case 'KeyA':
-                    moveLeft = false;
-                    break;
-                case 'KeyS':
-                    moveBackward = false;
-                    break;
-                case 'KeyD':
-                    moveRight = false;
-                    break;
+            break;
+          case "flat":
+            islandGeometry = new THREE.CylinderGeometry(100, 100, 20, 8);
+            break;
+          case "fountain":
+            // Water 7's fountain shape
+            islandGeometry = new THREE.CylinderGeometry(120, 80, 40, 32);
+            // Create a fountain-like depression
+            for (
+              let i = 0;
+              i < islandGeometry.attributes.position.array.length;
+              i += 3
+            ) {
+              const x = islandGeometry.attributes.position.array[i];
+              const z = islandGeometry.attributes.position.array[i + 2];
+              const dist = Math.sqrt(x * x + z * z);
+              if (dist < 60) {
+                islandGeometry.attributes.position.array[i + 1] -=
+                  10 * (1 - dist / 60);
+              }
             }
+            break;
+          case "bubbles":
+            // Sabaody's mangrove bubbles
+            islandGeometry = new THREE.SphereGeometry(80, 16, 16);
+            // Create multiple bubble-like protrusions
+            for (
+              let i = 0;
+              i < islandGeometry.attributes.position.array.length;
+              i += 3
+            ) {
+              const factor =
+                1 +
+                0.3 *
+                  Math.sin(5 * islandGeometry.attributes.position.array[i]) *
+                  Math.sin(5 * islandGeometry.attributes.position.array[i + 2]);
+              islandGeometry.attributes.position.array[i] *= factor;
+              islandGeometry.attributes.position.array[i + 1] *= factor;
+              islandGeometry.attributes.position.array[i + 2] *= factor;
+            }
+            break;
+          case "divided":
+            // Punk Hazard's divided landscape
+            islandGeometry = new THREE.CylinderGeometry(100, 100, 30, 16);
+            // Create jagged, uneven terrain
+            for (
+              let i = 0;
+              i < islandGeometry.attributes.position.array.length;
+              i += 3
+            ) {
+              if (islandGeometry.attributes.position.array[i + 1] > 0) {
+                islandGeometry.attributes.position.array[i + 1] +=
+                  Math.random() * 15;
+              }
+            }
+            break;
+          case "hilly":
+            // Dressrosa's hilly landscape
+            islandGeometry = new THREE.CylinderGeometry(100, 100, 30, 16);
+            // Create rolling hills
+            for (
+              let i = 0;
+              i < islandGeometry.attributes.position.array.length;
+              i += 3
+            ) {
+              const x = islandGeometry.attributes.position.array[i];
+              const z = islandGeometry.attributes.position.array[i + 2];
+              islandGeometry.attributes.position.array[i + 1] +=
+                15 * Math.sin(x / 20) * Math.sin(z / 20);
+            }
+            break;
+          default:
+            islandGeometry = new THREE.ConeGeometry(100, 50, 5);
         }
-        
-        // Create objects for the scene
-        function createObjects() {
-            // Create ocean
-            const oceanGeometry = new THREE.PlaneGeometry(2000, 2000, 20, 20);
-            oceanGeometry.rotateX(-Math.PI / 2);
-            
-            const oceanMaterial = new THREE.MeshStandardMaterial({
-                color: 0x0077be,
+
+        // Create island material based on base color
+        const islandMaterial = new THREE.MeshStandardMaterial({
+          color: design.baseColor,
+        });
+        currentIslandMesh = new THREE.Mesh(islandGeometry, islandMaterial);
+        currentIslandMesh.position.set(0, -25, 150); // Position island ahead of ship
+        currentIslandMesh.name = "island";
+        scene.add(currentIslandMesh);
+
+        // Add island-specific features
+        addIslandFeatures(island);
+      }
+
+      // Add features specific to each island
+      function addIslandFeatures(island) {
+        const design = island.design;
+
+        // Create sand around island for most islands
+        if (design.shape !== "bubbles") {
+          // Exception for Sabaody which is all trees
+          const sandGeometry = new THREE.CircleGeometry(110, 32);
+          const sandColor =
+            design.features.find(
+              (f) => f.type === "beach" || f.type === "desert"
+            )?.color || 0xc2b280;
+          const sandMaterial = new THREE.MeshStandardMaterial({
+            color: sandColor,
+          });
+          const sand = new THREE.Mesh(sandGeometry, sandMaterial);
+          sand.rotation.x = -Math.PI / 2;
+          sand.position.set(0, 0.1, 150); // Slightly above water
+          sand.userData = { islandFeature: true };
+          scene.add(sand);
+        }
+
+        // Add island-specific features based on design
+        switch (design.shape) {
+          case "cone": // Katori Island
+            // Add palm trees
+            for (let i = 0; i < 10; i++) {
+              const angle = Math.random() * Math.PI * 2;
+              const radius = Math.random() * 70 + 20;
+              const x = Math.cos(angle) * radius;
+              const z = Math.sin(angle) * radius + 150;
+
+              createPalmTree(x, 0, z);
+            }
+
+            // Add ruins
+            const ruinsGroup = new THREE.Group();
+            ruinsGroup.position.set(-40, 5, 130);
+
+            // Ancient stone pillars
+            for (let i = 0; i < 3; i++) {
+              const height = 10 + Math.random() * 5;
+              const pillarGeometry = new THREE.CylinderGeometry(
+                2,
+                2,
+                height,
+                6
+              );
+              const pillarMaterial = new THREE.MeshStandardMaterial({
+                color: 0x808080,
+              });
+              const pillar = new THREE.Mesh(pillarGeometry, pillarMaterial);
+              pillar.position.set(i * 6, height / 2, 0);
+              ruinsGroup.add(pillar);
+            }
+
+            // Stone platform
+            const platformGeometry = new THREE.BoxGeometry(25, 2, 15);
+            const platformMaterial = new THREE.MeshStandardMaterial({
+              color: 0x696969,
+            });
+            const platform = new THREE.Mesh(platformGeometry, platformMaterial);
+            platform.position.set(6, 0, 0);
+            ruinsGroup.add(platform);
+
+            ruinsGroup.userData = { islandFeature: true };
+            scene.add(ruinsGroup);
+            break;
+
+          case "mountains": // Drum Island
+            // Add snow particles
+            const snowGroup = new THREE.Group();
+            for (let i = 0; i < 200; i++) {
+              const snowGeometry = new THREE.SphereGeometry(0.5, 4, 4);
+              const snowMaterial = new THREE.MeshBasicMaterial({
+                color: 0xffffff,
+              });
+              const snow = new THREE.Mesh(snowGeometry, snowMaterial);
+
+              const radius = Math.random() * 100 + 20;
+              const angle = Math.random() * Math.PI * 2;
+              snow.position.set(
+                Math.cos(angle) * radius,
+                Math.random() * 40,
+                Math.sin(angle) * radius + 150
+              );
+              snowGroup.add(snow);
+            }
+
+            // Add medical facility (Chopper's home)
+            const castleGeometry = new THREE.CylinderGeometry(15, 20, 30, 8);
+            const castleMaterial = new THREE.MeshStandardMaterial({
+              color: 0xd2b48c,
+            });
+            const castle = new THREE.Mesh(castleGeometry, castleMaterial);
+            castle.position.set(0, 15, 150);
+            castle.userData = { islandFeature: true };
+            scene.add(castle);
+
+            // Castle top
+            const towerGeometry = new THREE.ConeGeometry(12, 15, 8);
+            const towerMaterial = new THREE.MeshStandardMaterial({
+              color: 0x8b0000,
+            });
+            const tower = new THREE.Mesh(towerGeometry, towerMaterial);
+            tower.position.set(0, 38, 150);
+            tower.userData = { islandFeature: true };
+            scene.add(tower);
+
+            snowGroup.userData = { islandFeature: true };
+            scene.add(snowGroup);
+            break;
+
+          case "flat": // Alabasta
+            // Add pyramid structures
+            const pyramidGeometry = new THREE.ConeGeometry(25, 40, 4);
+            const pyramidMaterial = new THREE.MeshStandardMaterial({
+              color: 0xd2b48c,
+            });
+            const pyramid = new THREE.Mesh(pyramidGeometry, pyramidMaterial);
+            pyramid.position.set(-40, 20, 130);
+            pyramid.userData = { islandFeature: true };
+            scene.add(pyramid);
+
+            // Add desert city buildings
+            const cityGroup = new THREE.Group();
+            cityGroup.position.set(40, 0, 130);
+
+            for (let i = 0; i < 10; i++) {
+              const buildingGeometry = new THREE.BoxGeometry(
+                5 + Math.random() * 5,
+                5 + Math.random() * 10,
+                5 + Math.random() * 5
+              );
+              const buildingMaterial = new THREE.MeshStandardMaterial({
+                color: 0xf5deb3,
+              });
+              const building = new THREE.Mesh(
+                buildingGeometry,
+                buildingMaterial
+              );
+              building.position.set(
+                (Math.random() - 0.5) * 40,
+                buildingGeometry.parameters.height / 2,
+                (Math.random() - 0.5) * 40
+              );
+              cityGroup.add(building);
+            }
+
+            // Add central palace
+            const palaceGeometry = new THREE.CylinderGeometry(10, 15, 20, 6);
+            const palaceMaterial = new THREE.MeshStandardMaterial({
+              color: 0xfffacd,
+            });
+            const palace = new THREE.Mesh(palaceGeometry, palaceMaterial);
+            palace.position.set(0, 10, 0);
+            cityGroup.add(palace);
+
+            // Add palace dome
+            const domeGeometry = new THREE.SphereGeometry(
+              10,
+              16,
+              8,
+              0,
+              Math.PI * 2,
+              0,
+              Math.PI / 2
+            );
+            const domeMaterial = new THREE.MeshStandardMaterial({
+              color: 0xffd700,
+            });
+            const dome = new THREE.Mesh(domeGeometry, domeMaterial);
+            dome.position.set(0, 20, 0);
+            cityGroup.add(dome);
+
+            cityGroup.userData = { islandFeature: true };
+            scene.add(cityGroup);
+            break;
+
+          case "fountain": // Water 7
+            // Create fountain and canals
+            const fountainGeometry = new THREE.CylinderGeometry(30, 50, 20, 32);
+            const fountainMaterial = new THREE.MeshStandardMaterial({
+              color: 0xadd8e6,
+            });
+            const fountain = new THREE.Mesh(fountainGeometry, fountainMaterial);
+            fountain.position.set(0, 10, 150);
+            fountain.userData = { islandFeature: true };
+            scene.add(fountain);
+
+            // Create water spout
+            const spoutGeometry = new THREE.CylinderGeometry(2, 5, 30, 16);
+            const spoutMaterial = new THREE.MeshStandardMaterial({
+              color: 0x87ceeb,
+              transparent: true,
+              opacity: 0.7,
+            });
+            const spout = new THREE.Mesh(spoutGeometry, spoutMaterial);
+            spout.position.set(0, 30, 150);
+            spout.userData = { islandFeature: true };
+            scene.add(spout);
+
+            // Add city buildings around the fountain
+            const water7Buildings = new THREE.Group();
+
+            // Create multiple buildings around the fountain
+            for (let i = 0; i < 20; i++) {
+              const angle = (i / 20) * Math.PI * 2;
+              const radius = 60 + Math.random() * 20;
+
+              const height = 10 + Math.random() * 20;
+              const buildingGeometry = new THREE.BoxGeometry(10, height, 10);
+              const buildingMaterial = new THREE.MeshStandardMaterial({
+                color: 0xf5f5f5,
+              });
+
+              const building = new THREE.Mesh(
+                buildingGeometry,
+                buildingMaterial
+              );
+              building.position.set(
+                Math.cos(angle) * radius,
+                height / 2,
+                Math.sin(angle) * radius + 150
+              );
+
+              // Rotate buildings to face the center
+              building.lookAt(new THREE.Vector3(0, 0, 150));
+              water7Buildings.add(building);
+            }
+
+            // Add main Galley-La building
+            const galleyLaGeometry = new THREE.BoxGeometry(20, 30, 15);
+            const galleyLaMaterial = new THREE.MeshStandardMaterial({
+              color: 0x4682b4,
+            });
+            const galleyLa = new THREE.Mesh(galleyLaGeometry, galleyLaMaterial);
+            galleyLa.position.set(0, 15, 100);
+            water7Buildings.add(galleyLa);
+
+            water7Buildings.userData = { islandFeature: true };
+            scene.add(water7Buildings);
+            break;
+
+          case "bubbles": // Sabaody Archipelago
+            // Create mangrove trees with bubbles
+            for (let i = 0; i < 7; i++) {
+              const angle = (i / 7) * Math.PI * 2;
+              const radius = 60;
+
+              // Tree trunk
+              const trunkGeometry = new THREE.CylinderGeometry(10, 15, 50, 8);
+              const trunkMaterial = new THREE.MeshStandardMaterial({
+                color: 0x8b4513,
+              });
+              const trunk = new THREE.Mesh(trunkGeometry, trunkMaterial);
+              trunk.position.set(
+                Math.cos(angle) * radius,
+                15,
+                Math.sin(angle) * radius + 150
+              );
+              trunk.userData = { islandFeature: true };
+              scene.add(trunk);
+
+              // Tree canopy (bubble-shaped)
+              const canopyGeometry = new THREE.SphereGeometry(25, 16, 16);
+              const canopyMaterial = new THREE.MeshStandardMaterial({
+                color: 0x32cd32,
+              });
+              const canopy = new THREE.Mesh(canopyGeometry, canopyMaterial);
+              canopy.position.set(
+                Math.cos(angle) * radius,
+                45,
+                Math.sin(angle) * radius + 150
+              );
+              canopy.userData = { islandFeature: true };
+              scene.add(canopy);
+
+              // Add small bubbles around trees
+              for (let j = 0; j < 5; j++) {
+                const bubbleSize = 2 + Math.random() * 5;
+                const bubbleGeometry = new THREE.SphereGeometry(
+                  bubbleSize,
+                  12,
+                  12
+                );
+                const bubbleMaterial = new THREE.MeshStandardMaterial({
+                  color: 0x98fb98,
+                  transparent: true,
+                  opacity: 0.5,
+                });
+
+                const bubble = new THREE.Mesh(bubbleGeometry, bubbleMaterial);
+                bubble.position.set(
+                  Math.cos(angle) * radius + (Math.random() - 0.5) * 30,
+                  45 + (Math.random() - 0.5) * 30,
+                  Math.sin(angle) * radius + 150 + (Math.random() - 0.5) * 30
+                );
+                bubble.userData = { islandFeature: true };
+                scene.add(bubble);
+              }
+            }
+
+            // Add amusement park features
+            const ferrisWheelGeometry = new THREE.TorusGeometry(15, 1, 8, 20);
+            const ferrisWheelMaterial = new THREE.MeshStandardMaterial({
+              color: 0xff69b4,
+            });
+            const ferrisWheel = new THREE.Mesh(
+              ferrisWheelGeometry,
+              ferrisWheelMaterial
+            );
+            ferrisWheel.position.set(0, 30, 150);
+            ferrisWheel.rotation.x = Math.PI / 2;
+            ferrisWheel.userData = { islandFeature: true };
+            scene.add(ferrisWheel);
+
+            // Add ferris wheel supports
+            const supportGeometry = new THREE.BoxGeometry(2, 30, 2);
+            const supportMaterial = new THREE.MeshStandardMaterial({
+              color: 0xd3d3d3,
+            });
+
+            const support1 = new THREE.Mesh(supportGeometry, supportMaterial);
+            support1.position.set(-15, 15, 150);
+            support1.userData = { islandFeature: true };
+            scene.add(support1);
+
+            const support2 = new THREE.Mesh(supportGeometry, supportMaterial);
+            support2.position.set(15, 15, 150);
+            support2.userData = { islandFeature: true };
+            scene.add(support2);
+            break;
+
+          case "divided": // Punk Hazard
+            // Create the divided island (half fire, half ice)
+            const fireGroup = new THREE.Group();
+            fireGroup.position.set(-40, 0, 150);
+
+            // Volcanic terrain
+            for (let i = 0; i < 5; i++) {
+              const volcanoGeometry = new THREE.ConeGeometry(
+                5 + Math.random() * 10,
+                20 + Math.random() * 10,
+                8
+              );
+              const volcanoMaterial = new THREE.MeshStandardMaterial({
+                color: 0x8b0000,
+              });
+              const volcano = new THREE.Mesh(volcanoGeometry, volcanoMaterial);
+              volcano.position.set(
+                (Math.random() - 0.5) * 60,
+                10,
+                (Math.random() - 0.5) * 60
+              );
+              fireGroup.add(volcano);
+
+              // Add lava spout
+              const lavaGeometry = new THREE.ConeGeometry(1, 5, 8);
+              const lavaMaterial = new THREE.MeshStandardMaterial({
+                color: 0xff4500,
+              });
+              const lava = new THREE.Mesh(lavaGeometry, lavaMaterial);
+              lava.position.set(
+                volcano.position.x,
+                volcano.position.y + volcanoGeometry.parameters.height / 2,
+                volcano.position.z
+              );
+              fireGroup.add(lava);
+            }
+
+            fireGroup.userData = { islandFeature: true };
+            scene.add(fireGroup);
+
+            // Ice side
+            const iceGroup = new THREE.Group();
+            iceGroup.position.set(40, 0, 150);
+
+            // Ice formations
+            for (let i = 0; i < 8; i++) {
+              const iceGeometry = new THREE.ConeGeometry(
+                4,
+                15 + Math.random() * 15,
+                5
+              );
+              const iceMaterial = new THREE.MeshStandardMaterial({
+                color: 0xadd8e6,
                 transparent: true,
                 opacity: 0.8,
-                side: THREE.DoubleSide
+              });
+              const ice = new THREE.Mesh(iceGeometry, iceMaterial);
+              ice.position.set(
+                (Math.random() - 0.5) * 60,
+                7.5,
+                (Math.random() - 0.5) * 60
+              );
+              // Tilt ice formations slightly
+              ice.rotation.z = (Math.random() - 0.5) * 0.3;
+              ice.rotation.x = (Math.random() - 0.5) * 0.3;
+              iceGroup.add(ice);
+            }
+
+            iceGroup.userData = { islandFeature: true };
+            scene.add(iceGroup);
+
+            // Add research facility in the middle
+            const labGeometry = new THREE.BoxGeometry(30, 15, 40);
+            const labMaterial = new THREE.MeshStandardMaterial({
+              color: 0x696969,
             });
-            
-            const ocean = new THREE.Mesh(oceanGeometry, oceanMaterial);
-            ocean.position.y = 0;
-            scene.add(ocean);
-            
-            // Create the current island
-            createIsland(currentIslandIndex);
-            
-            // Create the Going Merry ship
-            ship = createGoingMerry();
-        }
-        
-        // Create an island based on its design data
-        function createIsland(islandIndex) {
-            const island = islandsData[islandIndex];
-            const design = island.design;
-            
-            let islandGeometry;
-            
-            // Create island with the appropriate shape
-            switch(design.shape) {
-                case "cone":
-                    islandGeometry = new THREE.ConeGeometry(100, 50, 5);
-                    break;
-                case "mountains":
-                    // Creates multiple peaks using a specially deformed geometry
-                    islandGeometry = new THREE.ConeGeometry(100, 80, 6);
-                    // Add random height to vertices
-                    for (let i = 0; i < islandGeometry.attributes.position.array.length; i += 3) {
-                        if (islandGeometry.attributes.position.array[i+1] > 0) {
-                            islandGeometry.attributes.position.array[i+1] += Math.random() * 20 - 10;
-                        }
-                    }
-                    break;
-                case "flat":
-                    islandGeometry = new THREE.CylinderGeometry(100, 100, 20, 8);
-                    break;
-                case "fountain":
-                    // Water 7's fountain shape
-                    islandGeometry = new THREE.CylinderGeometry(120, 80, 40, 32);
-                    // Create a fountain-like depression
-                    for (let i = 0; i < islandGeometry.attributes.position.array.length; i += 3) {
-                        const x = islandGeometry.attributes.position.array[i];
-                        const z = islandGeometry.attributes.position.array[i+2];
-                        const dist = Math.sqrt(x*x + z*z);
-                        if (dist < 60) {
-                            islandGeometry.attributes.position.array[i+1] -= 10 * (1 - dist/60);
-                        }
-                    }
-                    break;
-                case "bubbles":
-                    // Sabaody's mangrove bubbles
-                    islandGeometry = new THREE.SphereGeometry(80, 16, 16);
-                    // Create multiple bubble-like protrusions
-                    for (let i = 0; i < islandGeometry.attributes.position.array.length; i += 3) {
-                        const factor = 1 + 0.3 * Math.sin(5 * islandGeometry.attributes.position.array[i]) * 
-                                           Math.sin(5 * islandGeometry.attributes.position.array[i+2]);
-                        islandGeometry.attributes.position.array[i] *= factor;
-                        islandGeometry.attributes.position.array[i+1] *= factor;
-                        islandGeometry.attributes.position.array[i+2] *= factor;
-                    }
-                    break;
-                case "divided":
-                    // Punk Hazard's divided landscape
-                    islandGeometry = new THREE.CylinderGeometry(100, 100, 30, 16);
-                    // Create jagged, uneven terrain
-                    for (let i = 0; i < islandGeometry.attributes.position.array.length; i += 3) {
-                        if (islandGeometry.attributes.position.array[i+1] > 0) {
-                            islandGeometry.attributes.position.array[i+1] += Math.random() * 15;
-                        }
-                    }
-                    break;
-                case "hilly":
-                    // Dressrosa's hilly landscape
-                    islandGeometry = new THREE.CylinderGeometry(100, 100, 30, 16);
-                    // Create rolling hills
-                    for (let i = 0; i < islandGeometry.attributes.position.array.length; i += 3) {
-                        const x = islandGeometry.attributes.position.array[i];
-                        const z = islandGeometry.attributes.position.array[i+2];
-                        islandGeometry.attributes.position.array[i+1] += 15 * Math.sin(x/20) * Math.sin(z/20);
-                    }
-                    break;
-                default:
-                    islandGeometry = new THREE.ConeGeometry(100, 50, 5);
-            }
-            
-            // Create island material based on base color
-            const islandMaterial = new THREE.MeshStandardMaterial({ color: design.baseColor });
-            currentIslandMesh = new THREE.Mesh(islandGeometry, islandMaterial);
-            currentIslandMesh.position.set(0, -25, 150); // Position island ahead of ship
-            currentIslandMesh.name = "island";
-            scene.add(currentIslandMesh);
-            
-            // Add island-specific features
-            addIslandFeatures(island);
-        }
-        
-        // Add features specific to each island
-        function addIslandFeatures(island) {
-            const design = island.design;
-            
-            // Create sand around island for most islands
-            if (design.shape !== "bubbles") { // Exception for Sabaody which is all trees
-                const sandGeometry = new THREE.CircleGeometry(110, 32);
-                const sandColor = design.features.find(f => f.type === "beach" || f.type === "desert")?.color || 0xc2b280;
-                const sandMaterial = new THREE.MeshStandardMaterial({ color: sandColor });
-                const sand = new THREE.Mesh(sandGeometry, sandMaterial);
-                sand.rotation.x = -Math.PI / 2;
-                sand.position.set(0, 0.1, 150); // Slightly above water
-                sand.userData = { islandFeature: true };
-                scene.add(sand);
-            }
-            
-            // Add island-specific features based on design
-            switch(design.shape) {
-                case "cone": // Katori Island
-                    // Add palm trees
-                    for (let i = 0; i < 10; i++) {
-                        const angle = Math.random() * Math.PI * 2;
-                        const radius = Math.random() * 70 + 20;
-                        const x = Math.cos(angle) * radius;
-                        const z = Math.sin(angle) * radius + 150;
-                        
-                        createPalmTree(x, 0, z);
-                    }
-                    
-                    // Add ruins
-                    const ruinsGroup = new THREE.Group();
-                    ruinsGroup.position.set(-40, 5, 130);
-                    
-                    // Ancient stone pillars
-                    for (let i = 0; i < 3; i++) {
-                        const height = 10 + Math.random() * 5;
-                        const pillarGeometry = new THREE.CylinderGeometry(2, 2, height, 6);
-                        const pillarMaterial = new THREE.MeshStandardMaterial({ color: 0x808080 });
-                        const pillar = new THREE.Mesh(pillarGeometry, pillarMaterial);
-                        pillar.position.set(i * 6, height/2, 0);
-                        ruinsGroup.add(pillar);
-                    }
-                    
-                    // Stone platform
-                    const platformGeometry = new THREE.BoxGeometry(25, 2, 15);
-                    const platformMaterial = new THREE.MeshStandardMaterial({ color: 0x696969 });
-                    const platform = new THREE.Mesh(platformGeometry, platformMaterial);
-                    platform.position.set(6, 0, 0);
-                    ruinsGroup.add(platform);
-                    
-                    ruinsGroup.userData = { islandFeature: true };
-                    scene.add(ruinsGroup);
-                    break;
-                
-                case "mountains": // Drum Island
-                    // Add snow particles
-                    const snowGroup = new THREE.Group();
-                    for (let i = 0; i < 200; i++) {
-                        const snowGeometry = new THREE.SphereGeometry(0.5, 4, 4);
-                        const snowMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
-                        const snow = new THREE.Mesh(snowGeometry, snowMaterial);
-                        
-                        const radius = Math.random() * 100 + 20;
-                        const angle = Math.random() * Math.PI * 2;
-                        snow.position.set(
-                            Math.cos(angle) * radius,
-                            Math.random() * 40,
-                            Math.sin(angle) * radius + 150
-                        );
-                        snowGroup.add(snow);
-                    }
-                    
-                    // Add medical facility (Chopper's home)
-                    const castleGeometry = new THREE.CylinderGeometry(15, 20, 30, 8);
-                    const castleMaterial = new THREE.MeshStandardMaterial({ color: 0xd2b48c });
-                    const castle = new THREE.Mesh(castleGeometry, castleMaterial);
-                    castle.position.set(0, 15, 150);
-                    castle.userData = { islandFeature: true };
-                    scene.add(castle);
-                    
-                    // Castle top
-                    const towerGeometry = new THREE.ConeGeometry(12, 15, 8);
-                    const towerMaterial = new THREE.MeshStandardMaterial({ color: 0x8b0000 });
-                    const tower = new THREE.Mesh(towerGeometry, towerMaterial);
-                    tower.position.set(0, 38, 150);
-                    tower.userData = { islandFeature: true };
-                    scene.add(tower);
-                    
-                    snowGroup.userData = { islandFeature: true };
-                    scene.add(snowGroup);
-                    break;
-                
-                case "flat": // Alabasta
-                    // Add pyramid structures
-                    const pyramidGeometry = new THREE.ConeGeometry(25, 40, 4);
-                    const pyramidMaterial = new THREE.MeshStandardMaterial({ color: 0xd2b48c });
-                    const pyramid = new THREE.Mesh(pyramidGeometry, pyramidMaterial);
-                    pyramid.position.set(-40, 20, 130);
-                    pyramid.userData = { islandFeature: true };
-                    scene.add(pyramid);
-                    
-                    // Add desert city buildings
-                    const cityGroup = new THREE.Group();
-                    cityGroup.position.set(40, 0, 130);
-                    
-                    for (let i = 0; i < 10; i++) {
-                        const buildingGeometry = new THREE.BoxGeometry(
-                            5 + Math.random() * 5,
-                            5 + Math.random() * 10,
-                            5 + Math.random() * 5
-                        );
-                        const buildingMaterial = new THREE.MeshStandardMaterial({ color: 0xf5deb3 });
-                        const building = new THREE.Mesh(buildingGeometry, buildingMaterial);
-                        building.position.set(
-                            (Math.random() - 0.5) * 40,
-                            buildingGeometry.parameters.height / 2,
-                            (Math.random() - 0.5) * 40
-                        );
-                        cityGroup.add(building);
-                    }
-                    
-                    // Add central palace
-                    const palaceGeometry = new THREE.CylinderGeometry(10, 15, 20, 6);
-                    const palaceMaterial = new THREE.MeshStandardMaterial({ color: 0xfffacd });
-                    const palace = new THREE.Mesh(palaceGeometry, palaceMaterial);
-                    palace.position.set(0, 10, 0);
-                    cityGroup.add(palace);
-                    
-                    // Add palace dome
-                    const domeGeometry = new THREE.SphereGeometry(10, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2);
-                    const domeMaterial = new THREE.MeshStandardMaterial({ color: 0xffd700 });
-                    const dome = new THREE.Mesh(domeGeometry, domeMaterial);
-                    dome.position.set(0, 20, 0);
-                    cityGroup.add(dome);
-                    
-                    cityGroup.userData = { islandFeature: true };
-                    scene.add(cityGroup);
-                    break;
-                
-                case "fountain": // Water 7
-                    // Create fountain and canals
-                    const fountainGeometry = new THREE.CylinderGeometry(30, 50, 20, 32);
-                    const fountainMaterial = new THREE.MeshStandardMaterial({ color: 0xadd8e6 });
-                    const fountain = new THREE.Mesh(fountainGeometry, fountainMaterial);
-                    fountain.position.set(0, 10, 150);
-                    fountain.userData = { islandFeature: true };
-                    scene.add(fountain);
-                    
-                    // Create water spout
-                    const spoutGeometry = new THREE.CylinderGeometry(2, 5, 30, 16);
-                    const spoutMaterial = new THREE.MeshStandardMaterial({ 
-                        color: 0x87ceeb,
-                        transparent: true,
-                        opacity: 0.7
-                    });
-                    const spout = new THREE.Mesh(spoutGeometry, spoutMaterial);
-                    spout.position.set(0, 30, 150);
-                    spout.userData = { islandFeature: true };
-                    scene.add(spout);
-                    
-                    // Add city buildings around the fountain
-                    const water7Buildings = new THREE.Group();
-                    
-                    // Create multiple buildings around the fountain
-                    for (let i = 0; i < 20; i++) {
-                        const angle = (i / 20) * Math.PI * 2;
-                        const radius = 60 + Math.random() * 20;
-                        
-                        const height = 10 + Math.random() * 20;
-                        const buildingGeometry = new THREE.BoxGeometry(10, height, 10);
-                        const buildingMaterial = new THREE.MeshStandardMaterial({ 
-                            color: 0xf5f5f5
-                        });
-                        
-                        const building = new THREE.Mesh(buildingGeometry, buildingMaterial);
-                        building.position.set(
-                            Math.cos(angle) * radius,
-                            height / 2,
-                            Math.sin(angle) * radius + 150
-                        );
-                        
-                        // Rotate buildings to face the center
-                        building.lookAt(new THREE.Vector3(0, 0, 150));
-                        water7Buildings.add(building);
-                    }
-                    
-                    // Add main Galley-La building
-                    const galleyLaGeometry = new THREE.BoxGeometry(20, 30, 15);
-                    const galleyLaMaterial = new THREE.MeshStandardMaterial({ color: 0x4682b4 });
-                    const galleyLa = new THREE.Mesh(galleyLaGeometry, galleyLaMaterial);
-                    galleyLa.position.set(0, 15, 100);
-                    water7Buildings.add(galleyLa);
-                    
-                    water7Buildings.userData = { islandFeature: true };
-                    scene.add(water7Buildings);
-                    break;
-                
-                case "bubbles": // Sabaody Archipelago
-                    // Create mangrove trees with bubbles
-                    for (let i = 0; i < 7; i++) {
-                        const angle = (i / 7) * Math.PI * 2;
-                        const radius = 60;
-                        
-                        // Tree trunk
-                        const trunkGeometry = new THREE.CylinderGeometry(10, 15, 50, 8);
-                        const trunkMaterial = new THREE.MeshStandardMaterial({ color: 0x8b4513 });
-                        const trunk = new THREE.Mesh(trunkGeometry, trunkMaterial);
-                        trunk.position.set(
-                            Math.cos(angle) * radius,
-                            15,
-                            Math.sin(angle) * radius + 150
-                        );
-                        trunk.userData = { islandFeature: true };
-                        scene.add(trunk);
-                        
-                        // Tree canopy (bubble-shaped)
-                        const canopyGeometry = new THREE.SphereGeometry(25, 16, 16);
-                        const canopyMaterial = new THREE.MeshStandardMaterial({ color: 0x32cd32 });
-                        const canopy = new THREE.Mesh(canopyGeometry, canopyMaterial);
-                        canopy.position.set(
-                            Math.cos(angle) * radius,
-                            45,
-                            Math.sin(angle) * radius + 150
-                        );
-                        canopy.userData = { islandFeature: true };
-                        scene.add(canopy);
-                        
-                        // Add small bubbles around trees
-                        for (let j = 0; j < 5; j++) {
-                            const bubbleSize = 2 + Math.random() * 5;
-                            const bubbleGeometry = new THREE.SphereGeometry(bubbleSize, 12, 12);
-                            const bubbleMaterial = new THREE.MeshStandardMaterial({ 
-                                color: 0x98fb98,
-                                transparent: true,
-                                opacity: 0.5
-                            });
-                            
-                            const bubble = new THREE.Mesh(bubbleGeometry, bubbleMaterial);
-                            bubble.position.set(
-                                Math.cos(angle) * radius + (Math.random() - 0.5) * 30,
-                                45 + (Math.random() - 0.5) * 30,
-                                Math.sin(angle) * radius + 150 + (Math.random() - 0.5) * 30
-                            );
-                            bubble.userData = { islandFeature: true };
-                            scene.add(bubble);
-                        }
-                    }
-                    
-                    // Add amusement park features
-                    const ferrisWheelGeometry = new THREE.TorusGeometry(15, 1, 8, 20);
-                    const ferrisWheelMaterial = new THREE.MeshStandardMaterial({ color: 0xff69b4 });
-                    const ferrisWheel = new THREE.Mesh(ferrisWheelGeometry, ferrisWheelMaterial);
-                    ferrisWheel.position.set(0, 30, 150);
-                    ferrisWheel.rotation.x = Math.PI / 2;
-                    ferrisWheel.userData = { islandFeature: true };
-                    scene.add(ferrisWheel);
-                    
-                    // Add ferris wheel supports
-                    const supportGeometry = new THREE.BoxGeometry(2, 30, 2);
-                    const supportMaterial = new THREE.MeshStandardMaterial({ color: 0xd3d3d3 });
-                    
-                    const support1 = new THREE.Mesh(supportGeometry, supportMaterial);
-                    support1.position.set(-15, 15, 150);
-                    support1.userData = { islandFeature: true };
-                    scene.add(support1);
-                    
-                    const support2 = new THREE.Mesh(supportGeometry, supportMaterial);
-                    support2.position.set(15, 15, 150);
-                    support2.userData = { islandFeature: true };
-                    scene.add(support2);
-                    break;
-                
-                case "divided": // Punk Hazard
-                    // Create the divided island (half fire, half ice)
-                    const fireGroup = new THREE.Group();
-                    fireGroup.position.set(-40, 0, 150);
-                    
-                    // Volcanic terrain
-                    for (let i = 0; i < 5; i++) {
-                        const volcanoGeometry = new THREE.ConeGeometry(5 + Math.random() * 10, 20 + Math.random() * 10, 8);
-                        const volcanoMaterial = new THREE.MeshStandardMaterial({ color: 0x8b0000 });
-                        const volcano = new THREE.Mesh(volcanoGeometry, volcanoMaterial);
-                        volcano.position.set(
-                            (Math.random() - 0.5) * 60,
-                            10,
-                            (Math.random() - 0.5) * 60
-                        );
-                        fireGroup.add(volcano);
-                        
-                        // Add lava spout
-                        const lavaGeometry = new THREE.ConeGeometry(1, 5, 8);
-                        const lavaMaterial = new THREE.MeshStandardMaterial({ color: 0xff4500 });
-                        const lava = new THREE.Mesh(lavaGeometry, lavaMaterial);
-                        lava.position.set(
-                            volcano.position.x,
-                            volcano.position.y + volcanoGeometry.parameters.height / 2,
-                            volcano.position.z
-                        );
-                        fireGroup.add(lava);
-                    }
-                    
-                    fireGroup.userData = { islandFeature: true };
-                    scene.add(fireGroup);
-                    
-                    // Ice side
-                    const iceGroup = new THREE.Group();
-                    iceGroup.position.set(40, 0, 150);
-                    
-                    // Ice formations
-                    for (let i = 0; i < 8; i++) {
-                        const iceGeometry = new THREE.ConeGeometry(4, 15 + Math.random() * 15, 5);
-                        const iceMaterial = new THREE.MeshStandardMaterial({ 
-                            color: 0xadd8e6,
-                            transparent: true,
-                            opacity: 0.8
-                        });
-                        const ice = new THREE.Mesh(iceGeometry, iceMaterial);
-                        ice.position.set(
-                            (Math.random() - 0.5) * 60,
-                            7.5,
-                            (Math.random() - 0.5) * 60
-                        );
-                        // Tilt ice formations slightly
-                        ice.rotation.z = (Math.random() - 0.5) * 0.3;
-                        ice.rotation.x = (Math.random() - 0.5) * 0.3;
-                        iceGroup.add(ice);
-                    }
-                    
-                    iceGroup.userData = { islandFeature: true };
-                    scene.add(iceGroup);
-                    
-                    // Add research facility in the middle
-                    const labGeometry = new THREE.BoxGeometry(30, 15, 40);
-                    const labMaterial = new THREE.MeshStandardMaterial({ color: 0x696969 });
-                    const lab = new THREE.Mesh(labGeometry, labMaterial);
-                    lab.position.set(0, 7.5, 150);
-                    lab.userData = { islandFeature: true };
-                    scene.add(lab);
-                    
-                    // Add lab towers
-                    const tower1Geometry = new THREE.CylinderGeometry(3, 3, 25, 8);
-                    const tower1Material = new THREE.MeshStandardMaterial({ color: 0x808080 });
-                    const tower1 = new THREE.Mesh(tower1Geometry, tower1Material);
-                    tower1.position.set(-10, 20, 140);
-                    tower1.userData = { islandFeature: true };
-                    scene.add(tower1);
-                    
-                    const tower2Geometry = new THREE.CylinderGeometry(3, 3, 20, 8);
-                    const tower2Material = new THREE.MeshStandardMaterial({ color: 0x808080 });
-                    const tower2 = new THREE.Mesh(tower2Geometry, tower2Material);
-                    tower2.position.set(10, 17.5, 160);
-                    tower2.userData = { islandFeature: true };
-                    scene.add(tower2);
-                    break;
-                
-                case "hilly": // Dressrosa
-                    // Create colorful city buildings
-                    const cityBuildings = new THREE.Group();
-                    
-                    // Generate colorful buildings with different heights
-                    const buildingColors = [0xffd700, 0xff69b4, 0x00ced1, 0xff6347, 0x9370db];
-                    
-                    for (let i = 0; i < 30; i++) {
-                        const buildingHeight = 5 + Math.random() * 15;
-                        const buildingGeometry = new THREE.BoxGeometry(8, buildingHeight, 8);
-                        const buildingColor = buildingColors[Math.floor(Math.random() * buildingColors.length)];
-                        const buildingMaterial = new THREE.MeshStandardMaterial({ color: buildingColor });
-                        const building = new THREE.Mesh(buildingGeometry, buildingMaterial);
-                        
-                        const angle = Math.random() * Math.PI * 2;
-                        const radius = Math.random() * 80 + 20;
-                        
-                        building.position.set(
-                            Math.cos(angle) * radius,
-                            buildingHeight / 2 + 5,
-                            Math.sin(angle) * radius + 150
-                        );
-                        
-                        // Add small roof
-                        const roofGeometry = new THREE.ConeGeometry(6, 4, 4);
-                        const roofMaterial = new THREE.MeshStandardMaterial({ color: 0xd2691e });
-                        const roof = new THREE.Mesh(roofGeometry, roofMaterial);
-                        roof.position.set(0, buildingHeight / 2 + 2, 0);
-                        building.add(roof);
-                        
-                        cityBuildings.add(building);
-                    }
-                    
-                    cityBuildings.userData = { islandFeature: true };
-                    scene.add(cityBuildings);
-                    
-                    // Add Corrida Colosseum
-                    const colosseumGroup = new THREE.Group();
-                    colosseumGroup.position.set(0, 10, 150);
-                    
-                    // Main colosseum structure (oval shape approximated with cylinder)
-                    const colosseumGeometry = new THREE.CylinderGeometry(30, 30, 20, 32);
-                    const colosseumMaterial = new THREE.MeshStandardMaterial({ color: 0xd2b48c });
-                    const colosseum = new THREE.Mesh(colosseumGeometry, colosseumMaterial);
-                    colosseumGroup.add(colosseum);
-                    
-                    // Inner arena
-                    const arenaGeometry = new THREE.CylinderGeometry(20, 20, 21, 32);
-                    const arenaMaterial = new THREE.MeshStandardMaterial({ color: 0xcd853f });
-                    const arena = new THREE.Mesh(arenaGeometry, arenaMaterial);
-                    arena.position.set(0, 0, 0);
-                    colosseumGroup.add(arena);
-                    
-                    // Add decorative elements
-                    for (let i = 0; i < 12; i++) {
-                        const angle = (i / 12) * Math.PI * 2;
-                        const pillarGeometry = new THREE.CylinderGeometry(1, 1, 15, 6);
-                        const pillarMaterial = new THREE.MeshStandardMaterial({ color: 0xffdead });
-                        const pillar = new THREE.Mesh(pillarGeometry, pillarMaterial);
-                        pillar.position.set(
-                            Math.cos(angle) * 30,
-                            7.5,
-                            Math.sin(angle) * 30
-                        );
-                        colosseumGroup.add(pillar);
-                    }
-                    
-                    colosseumGroup.userData = { islandFeature: true };
-                    scene.add(colosseumGroup);
-                    
-                    // Add some flowers and vegetation
-                    const vegetationGroup = new THREE.Group();
-                    
-                    for (let i = 0; i < 50; i++) {
-                        const flowerGeometry = new THREE.SphereGeometry(1, 8, 8);
-                        const flowerColor = Math.random() > 0.5 ? 0xff69b4 : 0xff0000;
-                        const flowerMaterial = new THREE.MeshStandardMaterial({ color: flowerColor });
-                        const flower = new THREE.Mesh(flowerGeometry, flowerMaterial);
-                        
-                        const angle = Math.random() * Math.PI * 2;
-                        const radius = Math.random() * 90 + 20;
-                        
-                        flower.position.set(
-                            Math.cos(angle) * radius,
-                            1,
-                            Math.sin(angle) * radius + 150
-                        );
-                        
-                        // Add stem
-                        const stemGeometry = new THREE.CylinderGeometry(0.2, 0.2, 3, 4);
-                        const stemMaterial = new THREE.MeshStandardMaterial({ color: 0x32cd32 });
-                        const stem = new THREE.Mesh(stemGeometry, stemMaterial);
-                        stem.position.set(0, -2, 0);
-                        flower.add(stem);
-                        
-                        vegetationGroup.add(flower);
-                    }
-                    
-                    vegetationGroup.userData = { islandFeature: true };
-                    scene.add(vegetationGroup);
-                    break;
-            }
-        }
-        
-        // Create a simple palm tree
-        function createPalmTree(x, y, z) {
-            // Trunk
-            const trunkGeometry = new THREE.CylinderGeometry(1, 1.5, 15, 8);
-            const trunkMaterial = new THREE.MeshStandardMaterial({ color: 0x8B4513 });
-            const trunk = new THREE.Mesh(trunkGeometry, trunkMaterial);
-            trunk.position.set(x, y + 7.5, z);
-            trunk.userData = { islandFeature: true };
-            scene.add(trunk);
-            
-            // Leaves
-            const leavesGeometry = new THREE.ConeGeometry(7, 10, 8);
-            const leavesMaterial = new THREE.MeshStandardMaterial({ color: 0x00FF00 });
-            const leaves = new THREE.Mesh(leavesGeometry, leavesMaterial);
-            leaves.position.set(x, y + 20, z);
-            leaves.userData = { islandFeature: true };
-            scene.add(leaves);
-        }
-        
-        // Create a more detailed version of the Going Merry from One Piece
-        function createGoingMerry() {
-            // Ship Group
-            const shipGroup = new THREE.Group();
-            
-            // Hull - main body
-            const hullGeometry = new THREE.BoxGeometry(20, 10, 40);
-            const hullMaterial = new THREE.MeshStandardMaterial({ color: 0xDEB887 });
-            const hull = new THREE.Mesh(hullGeometry, hullMaterial);
-            hull.position.y = 5;
-            shipGroup.add(hull);
-            
-            // Main Deck
-            const mainDeckGeometry = new THREE.BoxGeometry(18, 1, 38);
-            const deckMaterial = new THREE.MeshStandardMaterial({ color: 0xD2B48C });
-            const mainDeck = new THREE.Mesh(mainDeckGeometry, deckMaterial);
-            mainDeck.position.y = 10.5;
-            shipGroup.add(mainDeck);
-            
-            // Rear Elevated Deck (Quarter Deck)
-            const rearDeckGeometry = new THREE.BoxGeometry(18, 1, 12);
-            const rearDeck = new THREE.Mesh(rearDeckGeometry, deckMaterial);
-            rearDeck.position.set(0, 14.5, -13);
-            shipGroup.add(rearDeck);
-            
-            // Main Cabin
-            const cabinGeometry = new THREE.BoxGeometry(14, 8, 10);
-            const cabinMaterial = new THREE.MeshStandardMaterial({ color: 0xA0522D });
-            const cabin = new THREE.Mesh(cabinGeometry, cabinMaterial);
-            cabin.position.set(0, 15, -8);
-            shipGroup.add(cabin);
-            
-            // Captain's Quarters (rear)
-            const captainQuartersGeometry = new THREE.BoxGeometry(14, 6, 6);
-            const captainQuarters = new THREE.Mesh(captainQuartersGeometry, cabinMaterial);
-            captainQuarters.position.set(0, 18, -14);
-            shipGroup.add(captainQuarters);
-            
-            // Windows for cabin
-            for (let i = -1; i <= 1; i++) {
-                const windowGeometry = new THREE.CircleGeometry(1, 12);
-                const windowMaterial = new THREE.MeshStandardMaterial({ color: 0x87CEEB });
-                const window = new THREE.Mesh(windowGeometry, windowMaterial);
-                window.position.set(i * 4, 15, -3);
-                window.rotation.y = Math.PI;
-                shipGroup.add(window);
-            }
-            
-            // Main Mast
-            const mastGeometry = new THREE.CylinderGeometry(0.8, 1, 30, 8);
-            const mastMaterial = new THREE.MeshStandardMaterial({ color: 0x8B4513 });
-            const mast = new THREE.Mesh(mastGeometry, mastMaterial);
-            mast.position.set(0, 25, 2);
-            shipGroup.add(mast);
-            
-            // Crow's Nest
-            const crowsNestGeometry = new THREE.CylinderGeometry(2.5, 2.5, 2, 8);
-            const crowsNestMaterial = new THREE.MeshStandardMaterial({ color: 0x8B4513 });
-            const crowsNest = new THREE.Mesh(crowsNestGeometry, crowsNestMaterial);
-            crowsNest.position.set(0, 35, 2);
-            shipGroup.add(crowsNest);
-            
-            // Main Sail
-            const mainSailGeometry = new THREE.PlaneGeometry(15, 20);
-            const sailMaterial = new THREE.MeshStandardMaterial({ 
-                color: 0xFFFFFF,
-                side: THREE.DoubleSide
+            const lab = new THREE.Mesh(labGeometry, labMaterial);
+            lab.position.set(0, 7.5, 150);
+            lab.userData = { islandFeature: true };
+            scene.add(lab);
+
+            // Add lab towers
+            const tower1Geometry = new THREE.CylinderGeometry(3, 3, 25, 8);
+            const tower1Material = new THREE.MeshStandardMaterial({
+              color: 0x808080,
             });
-            const mainSail = new THREE.Mesh(mainSailGeometry, sailMaterial);
-            mainSail.position.set(0, 25, 2);
-            mainSail.rotation.y = Math.PI / 2;
-            shipGroup.add(mainSail);
-            
-            // Straw Hat Jolly Roger on sail
-            const logoGeometry = new THREE.CircleGeometry(3, 16);
-            const logoMaterial = new THREE.MeshStandardMaterial({ color: 0xFF0000 });
-            const logo = new THREE.Mesh(logoGeometry, logoMaterial);
-            logo.position.set(0.1, 25, 2);
-            logo.rotation.y = Math.PI / 2;
-            shipGroup.add(logo);
-            
-            // Ship railings
-            const railingMaterial = new THREE.MeshStandardMaterial({ color: 0x8B4513 });
-            
-            // Front railings
-            for (let i = -1; i <= 1; i += 0.5) {
-                const postGeometry = new THREE.CylinderGeometry(0.3, 0.3, 3, 6);
-                const post = new THREE.Mesh(postGeometry, railingMaterial);
-                post.position.set(i * 8, 12, 14);
-                shipGroup.add(post);
+            const tower1 = new THREE.Mesh(tower1Geometry, tower1Material);
+            tower1.position.set(-10, 20, 140);
+            tower1.userData = { islandFeature: true };
+            scene.add(tower1);
+
+            const tower2Geometry = new THREE.CylinderGeometry(3, 3, 20, 8);
+            const tower2Material = new THREE.MeshStandardMaterial({
+              color: 0x808080,
+            });
+            const tower2 = new THREE.Mesh(tower2Geometry, tower2Material);
+            tower2.position.set(10, 17.5, 160);
+            tower2.userData = { islandFeature: true };
+            scene.add(tower2);
+            break;
+
+          case "hilly": // Dressrosa
+            // Create colorful city buildings
+            const cityBuildings = new THREE.Group();
+
+            // Generate colorful buildings with different heights
+            const buildingColors = [
+              0xffd700, 0xff69b4, 0x00ced1, 0xff6347, 0x9370db,
+            ];
+
+            for (let i = 0; i < 30; i++) {
+              const buildingHeight = 5 + Math.random() * 15;
+              const buildingGeometry = new THREE.BoxGeometry(
+                8,
+                buildingHeight,
+                8
+              );
+              const buildingColor =
+                buildingColors[
+                  Math.floor(Math.random() * buildingColors.length)
+                ];
+              const buildingMaterial = new THREE.MeshStandardMaterial({
+                color: buildingColor,
+              });
+              const building = new THREE.Mesh(
+                buildingGeometry,
+                buildingMaterial
+              );
+
+              const angle = Math.random() * Math.PI * 2;
+              const radius = Math.random() * 80 + 20;
+
+              building.position.set(
+                Math.cos(angle) * radius,
+                buildingHeight / 2 + 5,
+                Math.sin(angle) * radius + 150
+              );
+
+              // Add small roof
+              const roofGeometry = new THREE.ConeGeometry(6, 4, 4);
+              const roofMaterial = new THREE.MeshStandardMaterial({
+                color: 0xd2691e,
+              });
+              const roof = new THREE.Mesh(roofGeometry, roofMaterial);
+              roof.position.set(0, buildingHeight / 2 + 2, 0);
+              building.add(roof);
+
+              cityBuildings.add(building);
             }
-            
-            // Side railings
-            for (let i = -4; i <= 4; i++) {
-                // Left side
-                const leftPost = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.3, 3, 6), railingMaterial);
-                leftPost.position.set(-9, 12, i * 4);
-                shipGroup.add(leftPost);
-                
-                // Right side
-                const rightPost = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.3, 3, 6), railingMaterial);
-                rightPost.position.set(9, 12, i * 4);
-                shipGroup.add(rightPost);
+
+            cityBuildings.userData = { islandFeature: true };
+            scene.add(cityBuildings);
+
+            // Add Corrida Colosseum
+            const colosseumGroup = new THREE.Group();
+            colosseumGroup.position.set(0, 10, 150);
+
+            // Main colosseum structure (oval shape approximated with cylinder)
+            const colosseumGeometry = new THREE.CylinderGeometry(
+              30,
+              30,
+              20,
+              32
+            );
+            const colosseumMaterial = new THREE.MeshStandardMaterial({
+              color: 0xd2b48c,
+            });
+            const colosseum = new THREE.Mesh(
+              colosseumGeometry,
+              colosseumMaterial
+            );
+            colosseumGroup.add(colosseum);
+
+            // Inner arena
+            const arenaGeometry = new THREE.CylinderGeometry(20, 20, 21, 32);
+            const arenaMaterial = new THREE.MeshStandardMaterial({
+              color: 0xcd853f,
+            });
+            const arena = new THREE.Mesh(arenaGeometry, arenaMaterial);
+            arena.position.set(0, 0, 0);
+            colosseumGroup.add(arena);
+
+            // Add decorative elements
+            for (let i = 0; i < 12; i++) {
+              const angle = (i / 12) * Math.PI * 2;
+              const pillarGeometry = new THREE.CylinderGeometry(1, 1, 15, 6);
+              const pillarMaterial = new THREE.MeshStandardMaterial({
+                color: 0xffdead,
+              });
+              const pillar = new THREE.Mesh(pillarGeometry, pillarMaterial);
+              pillar.position.set(
+                Math.cos(angle) * 30,
+                7.5,
+                Math.sin(angle) * 30
+              );
+              colosseumGroup.add(pillar);
             }
-            
-            // Horizontal railings
-            const sideRailingGeometry = new THREE.BoxGeometry(18, 0.4, 0.4);
-            const frontRailingGeometry = new THREE.BoxGeometry(0.4, 0.4, 38);
-            
-            const leftRailing = new THREE.Mesh(frontRailingGeometry, railingMaterial);
-            leftRailing.position.set(-9, 13, 0);
-            shipGroup.add(leftRailing);
-            
-            const rightRailing = new THREE.Mesh(frontRailingGeometry, railingMaterial);
-            rightRailing.position.set(9, 13, 0);
-            shipGroup.add(rightRailing);
-            
-            const frontRailing = new THREE.Mesh(sideRailingGeometry, railingMaterial);
-            frontRailing.position.set(0, 13, 19);
-            shipGroup.add(frontRailing);
-            
-            // Tangerine Trees (Nami's grove)
-            for (let i = 0; i < 3; i++) {
-                // Tree pot
-                const potGeometry = new THREE.CylinderGeometry(0.8, 0.6, 1.5, 8);
-                const potMaterial = new THREE.MeshStandardMaterial({ color: 0x8B4513 });
-                const pot = new THREE.Mesh(potGeometry, potMaterial);
-                pot.position.set(-5 + i * 2, 11.5, -14);
-                shipGroup.add(pot);
-                
-                // Tree foliage
-                const foliageGeometry = new THREE.SphereGeometry(1.2, 8, 8);
-                const foliageMaterial = new THREE.MeshStandardMaterial({ color: 0x228B22 });
-                const foliage = new THREE.Mesh(foliageGeometry, foliageMaterial);
-                foliage.position.set(-5 + i * 2, 13.5, -14);
-                shipGroup.add(foliage);
-                
-                // Tangerines
-                for (let j = 0; j < 3; j++) {
-                    const tangerineGeometry = new THREE.SphereGeometry(0.2, 8, 8);
-                    const tangerineMaterial = new THREE.MeshStandardMaterial({ color: 0xFFA500 });
-                    const tangerine = new THREE.Mesh(tangerineGeometry, tangerineMaterial);
-                    tangerine.position.set(-5 + i * 2 + (Math.random() - 0.5) * 0.8, 
-                                          13.5 + (Math.random() - 0.5) * 0.8, 
-                                          -14 + (Math.random() - 0.5) * 0.8);
-                    shipGroup.add(tangerine);
-                }
+
+            colosseumGroup.userData = { islandFeature: true };
+            scene.add(colosseumGroup);
+
+            // Add some flowers and vegetation
+            const vegetationGroup = new THREE.Group();
+
+            for (let i = 0; i < 50; i++) {
+              const flowerGeometry = new THREE.SphereGeometry(1, 8, 8);
+              const flowerColor = Math.random() > 0.5 ? 0xff69b4 : 0xff0000;
+              const flowerMaterial = new THREE.MeshStandardMaterial({
+                color: flowerColor,
+              });
+              const flower = new THREE.Mesh(flowerGeometry, flowerMaterial);
+
+              const angle = Math.random() * Math.PI * 2;
+              const radius = Math.random() * 90 + 20;
+
+              flower.position.set(
+                Math.cos(angle) * radius,
+                1,
+                Math.sin(angle) * radius + 150
+              );
+
+              // Add stem
+              const stemGeometry = new THREE.CylinderGeometry(0.2, 0.2, 3, 4);
+              const stemMaterial = new THREE.MeshStandardMaterial({
+                color: 0x32cd32,
+              });
+              const stem = new THREE.Mesh(stemGeometry, stemMaterial);
+              stem.position.set(0, -2, 0);
+              flower.add(stem);
+
+              vegetationGroup.add(flower);
             }
-            
-            // Anchor
-            const anchorGeometry = new THREE.BoxGeometry(1, 3, 0.5);
-            const anchorMaterial = new THREE.MeshStandardMaterial({ color: 0x696969 });
-            const anchor = new THREE.Mesh(anchorGeometry, anchorMaterial);
-            anchor.position.set(-9.5, 8, 5);
-            shipGroup.add(anchor);
-            
-            // Sheep figurehead (more detailed)
-            const headGeometry = new THREE.SphereGeometry(3, 12, 12);
-            const woolMaterial = new THREE.MeshStandardMaterial({ color: 0xFFFFFF });
-            const head = new THREE.Mesh(headGeometry, woolMaterial);
-            head.position.set(0, 13, 20);
-            shipGroup.add(head);
-            
-            // Sheep horns
-            const hornGeometry = new THREE.CylinderGeometry(0.4, 0.2, 3, 8);
-            const hornMaterial = new THREE.MeshStandardMaterial({ color: 0xF5DEB3 });
-            
-            const leftHorn = new THREE.Mesh(hornGeometry, hornMaterial);
-            leftHorn.position.set(-1.5, 15, 19);
-            leftHorn.rotation.z = -Math.PI / 4;
-            shipGroup.add(leftHorn);
-            
-            const rightHorn = new THREE.Mesh(hornGeometry, hornMaterial);
-            rightHorn.position.set(1.5, 15, 19);
-            rightHorn.rotation.z = Math.PI / 4;
-            shipGroup.add(rightHorn);
-            
-            // Sheep eyes
-            const eyeGeometry = new THREE.SphereGeometry(0.4, 8, 8);
-            const eyeMaterial = new THREE.MeshStandardMaterial({ color: 0x000000 });
-            
-            const leftEye = new THREE.Mesh(eyeGeometry, eyeMaterial);
-            leftEye.position.set(-1.5, 13, 22);
-            shipGroup.add(leftEye);
-            
-            const rightEye = new THREE.Mesh(eyeGeometry, eyeMaterial);
-            rightEye.position.set(1.5, 13, 22);
-            shipGroup.add(rightEye);
-            
-            // Position the whole ship
-            shipGroup.position.set(0, 0, 0);
-            scene.add(shipGroup);
-            
-            return shipGroup;
+
+            vegetationGroup.userData = { islandFeature: true };
+            scene.add(vegetationGroup);
+            break;
         }
-        
-        // Handle window resizing
-        function onWindowResize() {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
+      }
+
+      // Create a simple palm tree
+      function createPalmTree(x, y, z) {
+        // Trunk
+        const trunkGeometry = new THREE.CylinderGeometry(1, 1.5, 15, 8);
+        const trunkMaterial = new THREE.MeshStandardMaterial({
+          color: 0x8b4513,
+        });
+        const trunk = new THREE.Mesh(trunkGeometry, trunkMaterial);
+        trunk.position.set(x, y + 7.5, z);
+        trunk.userData = { islandFeature: true };
+        scene.add(trunk);
+
+        // Leaves
+        const leavesGeometry = new THREE.ConeGeometry(7, 10, 8);
+        const leavesMaterial = new THREE.MeshStandardMaterial({
+          color: 0x00ff00,
+        });
+        const leaves = new THREE.Mesh(leavesGeometry, leavesMaterial);
+        leaves.position.set(x, y + 20, z);
+        leaves.userData = { islandFeature: true };
+        scene.add(leaves);
+      }
+
+      // Create a more detailed version of the Going Merry from One Piece
+      function createGoingMerry() {
+        // Ship Group
+        const shipGroup = new THREE.Group();
+
+        // Hull - main body
+        const hullGeometry = new THREE.BoxGeometry(20, 10, 40);
+        const hullMaterial = new THREE.MeshStandardMaterial({
+          color: 0xdeb887,
+        });
+        const hull = new THREE.Mesh(hullGeometry, hullMaterial);
+        hull.position.y = 5;
+        shipGroup.add(hull);
+
+        // Main Deck
+        const mainDeckGeometry = new THREE.BoxGeometry(18, 1, 38);
+        const deckMaterial = new THREE.MeshStandardMaterial({
+          color: 0xd2b48c,
+        });
+        const mainDeck = new THREE.Mesh(mainDeckGeometry, deckMaterial);
+        mainDeck.position.y = 10.5;
+        shipGroup.add(mainDeck);
+
+        // Rear Elevated Deck (Quarter Deck)
+        const rearDeckGeometry = new THREE.BoxGeometry(18, 1, 12);
+        const rearDeck = new THREE.Mesh(rearDeckGeometry, deckMaterial);
+        rearDeck.position.set(0, 14.5, -13);
+        shipGroup.add(rearDeck);
+
+        // Main Cabin
+        const cabinGeometry = new THREE.BoxGeometry(14, 8, 10);
+        const cabinMaterial = new THREE.MeshStandardMaterial({
+          color: 0xa0522d,
+        });
+        const cabin = new THREE.Mesh(cabinGeometry, cabinMaterial);
+        cabin.position.set(0, 15, -8);
+        shipGroup.add(cabin);
+
+        // Captain's Quarters (rear)
+        const captainQuartersGeometry = new THREE.BoxGeometry(14, 6, 6);
+        const captainQuarters = new THREE.Mesh(
+          captainQuartersGeometry,
+          cabinMaterial
+        );
+        captainQuarters.position.set(0, 18, -14);
+        shipGroup.add(captainQuarters);
+
+        // Windows for cabin
+        for (let i = -1; i <= 1; i++) {
+          const windowGeometry = new THREE.CircleGeometry(1, 12);
+          const windowMaterial = new THREE.MeshStandardMaterial({
+            color: 0x87ceeb,
+          });
+          const window = new THREE.Mesh(windowGeometry, windowMaterial);
+          window.position.set(i * 4, 15, -3);
+          window.rotation.y = Math.PI;
+          shipGroup.add(window);
         }
-        
-        // Check if player is looking toward the island (with wider angle)
-        function checkLookingAtIsland() {
-            // Get direction vector from camera to island
-            const islandPosition = new THREE.Vector3(0, 0, 150);
-            const directionToIsland = new THREE.Vector3();
-            directionToIsland.subVectors(islandPosition, camera.position);
-            directionToIsland.normalize();
-            
-            // Get camera's forward direction
-            const cameraDirection = new THREE.Vector3(0, 0, -1);
-            cameraDirection.applyQuaternion(camera.quaternion);
-            
-            // Calculate dot product (cosine of angle between vectors)
-            const dotProduct = cameraDirection.dot(directionToIsland);
-            
-            // If dot product is > 0.7, camera is looking roughly toward the island
-            // (corresponds to about a 45 degree cone)
-            let newLookingAtIsland = (dotProduct > 0.7);
-            
-            // Only update display if state changed
-            if (newLookingAtIsland !== lookingAtIsland) {
-                lookingAtIsland = newLookingAtIsland;
-                infoPanel.style.display = lookingAtIsland ? 'block' : 'none';
-                
-                // Update island info
-                if (lookingAtIsland) {
-                    document.getElementById('island-name').textContent = islandsData[currentIslandIndex].name;
-                    document.getElementById('island-description').textContent = islandsData[currentIslandIndex].description;
-                }
-            }
+
+        // Main Mast
+        const mastGeometry = new THREE.CylinderGeometry(0.8, 1, 30, 8);
+        const mastMaterial = new THREE.MeshStandardMaterial({
+          color: 0x8b4513,
+        });
+        const mast = new THREE.Mesh(mastGeometry, mastMaterial);
+        mast.position.set(0, 25, 2);
+        shipGroup.add(mast);
+
+        // Crow's Nest
+        const crowsNestGeometry = new THREE.CylinderGeometry(2.5, 2.5, 2, 8);
+        const crowsNestMaterial = new THREE.MeshStandardMaterial({
+          color: 0x8b4513,
+        });
+        const crowsNest = new THREE.Mesh(crowsNestGeometry, crowsNestMaterial);
+        crowsNest.position.set(0, 35, 2);
+        shipGroup.add(crowsNest);
+
+        // Main Sail
+        const mainSailGeometry = new THREE.PlaneGeometry(15, 20);
+        const sailMaterial = new THREE.MeshStandardMaterial({
+          color: 0x000000,
+          side: THREE.DoubleSide,
+        });
+        const mainSail = new THREE.Mesh(mainSailGeometry, sailMaterial);
+        mainSail.position.set(0, 25, 2);
+        mainSail.rotation.y = Math.PI / 2;
+        shipGroup.add(mainSail);
+
+        // Straw Hat Jolly Roger on sail
+        const jollyRogerGroup = new THREE.Group();
+        jollyRogerGroup.position.set(0.1, 25, 2);
+        jollyRogerGroup.rotation.y = Math.PI / 2;
+
+        // White circular background
+        const backgroundGeometry = new THREE.CircleGeometry(3, 24);
+        const backgroundMaterial = new THREE.MeshStandardMaterial({
+          color: 0xffffff,
+          side: THREE.DoubleSide,
+        });
+        const background = new THREE.Mesh(
+          backgroundGeometry,
+          backgroundMaterial
+        );
+        background.position.z = 0.01;
+        jollyRogerGroup.add(background);
+
+        // Simple skull - white circle
+        const skullGeometry = new THREE.CircleGeometry(1.6, 24);
+        const skullMaterial = new THREE.MeshStandardMaterial({
+          color: 0xffffff,
+          side: THREE.DoubleSide,
+        });
+        const skull = new THREE.Mesh(skullGeometry, skullMaterial);
+        skull.position.z = 0.02;
+        skull.position.y = -0.3; // Move skull down a bit to make room for hat
+        jollyRogerGroup.add(skull);
+
+        // Eye sockets - two black circles
+        const eyeSocketMaterial = new THREE.MeshStandardMaterial({
+          color: 0x000000,
+          side: THREE.DoubleSide,
+        });
+
+        const jrLeftEyeGeometry = new THREE.CircleGeometry(0.3, 16);
+        const jrLeftEye = new THREE.Mesh(jrLeftEyeGeometry, eyeSocketMaterial);
+        jrLeftEye.position.set(-0.5, -0.1, 0.03);
+        jollyRogerGroup.add(jrLeftEye);
+
+        const jrRightEyeGeometry = new THREE.CircleGeometry(0.3, 16);
+        const jrRightEye = new THREE.Mesh(
+          jrRightEyeGeometry,
+          eyeSocketMaterial
+        );
+        jrRightEye.position.set(0.5, -0.1, 0.03);
+        jollyRogerGroup.add(jrRightEye);
+
+        // Simple grin - a curved line using a thin ring
+        const grinGeometry = new THREE.RingGeometry(
+          0.7,
+          0.8,
+          32,
+          1,
+          Math.PI * 0.25,
+          Math.PI * 0.5
+        );
+        const grinMaterial = new THREE.MeshStandardMaterial({
+          color: 0x000000,
+          side: THREE.DoubleSide,
+        });
+        const grin = new THREE.Mesh(grinGeometry, grinMaterial);
+        grin.position.set(0, -0.7, 0.03);
+        jollyRogerGroup.add(grin);
+
+        // Crossbones - two white bars
+        const boneGeometry = new THREE.PlaneGeometry(0.3, 2);
+        const boneMaterial = new THREE.MeshStandardMaterial({
+          color: 0xffffff,
+          side: THREE.DoubleSide,
+        });
+
+        const leftBone = new THREE.Mesh(boneGeometry, boneMaterial);
+        leftBone.position.set(-0.5, -1.8, 0.025);
+        leftBone.rotation.z = Math.PI / 4;
+        jollyRogerGroup.add(leftBone);
+
+        const rightBone = new THREE.Mesh(boneGeometry, boneMaterial);
+        rightBone.position.set(0.5, -1.8, 0.025);
+        rightBone.rotation.z = -Math.PI / 4;
+        jollyRogerGroup.add(rightBone);
+
+        // Horizontal straw hat - a simple disc with a brim and band
+        // Hat brim (full circle)
+        const hatBrimGeometry = new THREE.CircleGeometry(1.4, 32);
+        const hatBrimMaterial = new THREE.MeshStandardMaterial({
+          color: 0xf0d58c, // Straw color
+          side: THREE.DoubleSide,
+        });
+        const hatBrim = new THREE.Mesh(hatBrimGeometry, hatBrimMaterial);
+        hatBrim.position.set(0, 0.8, 0.03); // Position above the skull
+        jollyRogerGroup.add(hatBrim);
+
+        // Hat red band - a simple line across the middle of the hat
+        const hatBandGeometry = new THREE.PlaneGeometry(2.8, 0.3);
+        const hatBandMaterial = new THREE.MeshStandardMaterial({
+          color: 0xd70000, // Red
+          side: THREE.DoubleSide,
+        });
+        const hatBand = new THREE.Mesh(hatBandGeometry, hatBandMaterial);
+        hatBand.position.set(0, 0.8, 0.04); // Slightly in front of the hat
+        jollyRogerGroup.add(hatBand);
+
+        shipGroup.add(jollyRogerGroup);
+
+        // Ship railings
+        const railingMaterial = new THREE.MeshStandardMaterial({
+          color: 0x8b4513,
+        });
+
+        // Front railings
+        for (let i = -1; i <= 1; i += 0.5) {
+          const postGeometry = new THREE.CylinderGeometry(0.3, 0.3, 3, 6);
+          const post = new THREE.Mesh(postGeometry, railingMaterial);
+          post.position.set(i * 8, 12, 14);
+          shipGroup.add(post);
         }
-        
-        // Update camera rotation based on key input
-        function updateCameraRotation() {
-            if (lookUp) cameraRotation.x += 0.03;
-            if (lookDown) cameraRotation.x -= 0.03;
-            if (lookLeft) cameraRotation.y += 0.03;
-            if (lookRight) cameraRotation.y -= 0.03;
-            
-            // Limit vertical rotation to avoid flipping
-            cameraRotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, cameraRotation.x));
-            
-            // Apply rotation
-            camera.rotation.x = cameraRotation.x;
-            camera.rotation.y = cameraRotation.y;
+
+        // Side railings
+        for (let i = -4; i <= 4; i++) {
+          // Left side
+          const leftPost = new THREE.Mesh(
+            new THREE.CylinderGeometry(0.3, 0.3, 3, 6),
+            railingMaterial
+          );
+          leftPost.position.set(-9, 12, i * 4);
+          shipGroup.add(leftPost);
+
+          // Right side
+          const rightPost = new THREE.Mesh(
+            new THREE.CylinderGeometry(0.3, 0.3, 3, 6),
+            railingMaterial
+          );
+          rightPost.position.set(9, 12, i * 4);
+          shipGroup.add(rightPost);
         }
-        
-        // Update camera position based on key input
-        function updateCameraPosition() {
-            const speed = 0.8;
-            const moveVector = new THREE.Vector3();
-            
-            if (moveForward) {
-                moveVector.z -= Math.cos(cameraRotation.y) * speed;
-                moveVector.x -= Math.sin(cameraRotation.y) * speed;
-            }
-            if (moveBackward) {
-                moveVector.z += Math.cos(cameraRotation.y) * speed;
-                moveVector.x += Math.sin(cameraRotation.y) * speed;
-            }
-            if (moveLeft) {
-                moveVector.x -= Math.cos(cameraRotation.y) * speed;
-                moveVector.z += Math.sin(cameraRotation.y) * speed;
-            }
-            if (moveRight) {
-                moveVector.x += Math.cos(cameraRotation.y) * speed;
-                moveVector.z -= Math.sin(cameraRotation.y) * speed;
-            }
-            
-            // Apply movement
-            camera.position.add(moveVector);
-            
-            // Keep player on the ship
-            const shipBoundary = {
-                minX: -9,
-                maxX: 9,
-                minZ: -19,
-                maxZ: 19
-            };
-            
-            camera.position.x = Math.max(shipBoundary.minX, Math.min(shipBoundary.maxX, camera.position.x));
-            camera.position.z = Math.max(shipBoundary.minZ, Math.min(shipBoundary.maxZ, camera.position.z));
-            
-            // Keep player at deck level
-            camera.position.y = 15;
+
+        // Horizontal railings
+        const sideRailingGeometry = new THREE.BoxGeometry(18, 0.4, 0.4);
+        const frontRailingGeometry = new THREE.BoxGeometry(0.4, 0.4, 38);
+
+        const leftRailing = new THREE.Mesh(
+          frontRailingGeometry,
+          railingMaterial
+        );
+        leftRailing.position.set(-9, 13, 0);
+        shipGroup.add(leftRailing);
+
+        const rightRailing = new THREE.Mesh(
+          frontRailingGeometry,
+          railingMaterial
+        );
+        rightRailing.position.set(9, 13, 0);
+        shipGroup.add(rightRailing);
+
+        const frontRailing = new THREE.Mesh(
+          sideRailingGeometry,
+          railingMaterial
+        );
+        frontRailing.position.set(0, 13, 19);
+        shipGroup.add(frontRailing);
+
+        // Tangerine Trees (Nami's grove)
+        for (let i = 0; i < 3; i++) {
+          // Tree pot
+          const potGeometry = new THREE.CylinderGeometry(0.8, 0.6, 1.5, 8);
+          const potMaterial = new THREE.MeshStandardMaterial({
+            color: 0x8b4513,
+          });
+          const pot = new THREE.Mesh(potGeometry, potMaterial);
+          pot.position.set(-5 + i * 2, 11.5, -14);
+          shipGroup.add(pot);
+
+          // Tree foliage
+          const foliageGeometry = new THREE.SphereGeometry(1.2, 8, 8);
+          const foliageMaterial = new THREE.MeshStandardMaterial({
+            color: 0x228b22,
+          });
+          const foliage = new THREE.Mesh(foliageGeometry, foliageMaterial);
+          foliage.position.set(-5 + i * 2, 13.5, -14);
+          shipGroup.add(foliage);
+
+          // Tangerines
+          for (let j = 0; j < 3; j++) {
+            const tangerineGeometry = new THREE.SphereGeometry(0.2, 8, 8);
+            const tangerineMaterial = new THREE.MeshStandardMaterial({
+              color: 0xffa500,
+            });
+            const tangerine = new THREE.Mesh(
+              tangerineGeometry,
+              tangerineMaterial
+            );
+            tangerine.position.set(
+              -5 + i * 2 + (Math.random() - 0.5) * 0.8,
+              13.5 + (Math.random() - 0.5) * 0.8,
+              -14 + (Math.random() - 0.5) * 0.8
+            );
+            shipGroup.add(tangerine);
+          }
         }
-        
-        // Animation loop
-        function animate() {
-            requestAnimationFrame(animate);
-            
-            if (gameStarted) {
-                if (!isTravel) {
-                    // Update camera rotation
-                    updateCameraRotation();
-                    
-                    // Update camera position
-                    updateCameraPosition();
-                    
-                    // Check if looking at island
-                    checkLookingAtIsland();
-                }
-                
-                // Only update islands panel when it's visible and not during travel
-                // We don't need to update it every frame
-            }
-            
-            renderer.render(scene, camera);
+
+        // Anchor
+        const anchorGeometry = new THREE.BoxGeometry(1, 3, 0.5);
+        const anchorMaterial = new THREE.MeshStandardMaterial({
+          color: 0x696969,
+        });
+        const anchor = new THREE.Mesh(anchorGeometry, anchorMaterial);
+        anchor.position.set(-9.5, 8, 5);
+        shipGroup.add(anchor);
+
+        // Sheep figurehead (more detailed)
+        const headGeometry = new THREE.SphereGeometry(3, 12, 12);
+        const woolMaterial = new THREE.MeshStandardMaterial({
+          color: 0xffffff,
+        });
+        const head = new THREE.Mesh(headGeometry, woolMaterial);
+        head.position.set(0, 13, 20);
+        shipGroup.add(head);
+
+        // Sheep horns
+        const hornGeometry = new THREE.CylinderGeometry(0.4, 0.2, 3, 8);
+        const hornMaterial = new THREE.MeshStandardMaterial({
+          color: 0xf5deb3,
+        });
+
+        const leftHorn = new THREE.Mesh(hornGeometry, hornMaterial);
+        leftHorn.position.set(-1.5, 15, 19);
+        leftHorn.rotation.z = -Math.PI / 4;
+        shipGroup.add(leftHorn);
+
+        const rightHorn = new THREE.Mesh(hornGeometry, hornMaterial);
+        rightHorn.position.set(1.5, 15, 19);
+        rightHorn.rotation.z = Math.PI / 4;
+        shipGroup.add(rightHorn);
+
+        // Sheep eyes
+        const eyeGeometry = new THREE.SphereGeometry(0.4, 8, 8);
+        const eyeMaterial = new THREE.MeshStandardMaterial({ color: 0x000000 });
+
+        const leftEye = new THREE.Mesh(eyeGeometry, eyeMaterial);
+        leftEye.position.set(-1.5, 13, 22);
+        shipGroup.add(leftEye);
+
+        const rightEye = new THREE.Mesh(eyeGeometry, eyeMaterial);
+        rightEye.position.set(1.5, 13, 22);
+        shipGroup.add(rightEye);
+
+        // Position the whole ship
+        shipGroup.position.set(0, 0, 0);
+        scene.add(shipGroup);
+
+        return shipGroup;
+      }
+
+      // Handle window resizing
+      function onWindowResize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      }
+
+      // Check if player is looking toward the island (with wider angle)
+      function checkLookingAtIsland() {
+        // Get direction vector from camera to island
+        const islandPosition = new THREE.Vector3(0, 0, 150);
+        const directionToIsland = new THREE.Vector3();
+        directionToIsland.subVectors(islandPosition, camera.position);
+        directionToIsland.normalize();
+
+        // Get camera's forward direction
+        const cameraDirection = new THREE.Vector3(0, 0, -1);
+        cameraDirection.applyQuaternion(camera.quaternion);
+
+        // Calculate dot product (cosine of angle between vectors)
+        const dotProduct = cameraDirection.dot(directionToIsland);
+
+        // If dot product is > 0.7, camera is looking roughly toward the island
+        // (corresponds to about a 45 degree cone)
+        let newLookingAtIsland = dotProduct > 0.7;
+
+        // Only update display if state changed
+        if (newLookingAtIsland !== lookingAtIsland) {
+          lookingAtIsland = newLookingAtIsland;
+          infoPanel.style.display = lookingAtIsland ? "block" : "none";
+
+          // Update island info
+          if (lookingAtIsland) {
+            document.getElementById("island-name").textContent =
+              islandsData[currentIslandIndex].name;
+            document.getElementById("island-description").textContent =
+              islandsData[currentIslandIndex].description;
+          }
         }
-        
-        // Initialize and start animation
-        init();
-        animate();
+      }
+
+      // Update camera rotation based on key input
+      function updateCameraRotation() {
+        // Update rotation angles based on key input
+        if (lookUp) cameraRotation.x += 0.03;
+        if (lookDown) cameraRotation.x -= 0.03;
+        if (lookLeft) cameraRotation.y += 0.03;
+        if (lookRight) cameraRotation.y -= 0.03;
+
+        // Limit vertical rotation to avoid flipping (between looking straight down and straight up)
+        cameraRotation.x = Math.max(
+          -Math.PI / 2 + 0.1, // Looking down (almost straight down)
+          Math.min(Math.PI / 2 - 0.1, cameraRotation.x) // Looking up (almost straight up)
+        );
+
+        // Create a new quaternion for the camera rotation
+        const quaternion = new THREE.Quaternion();
+
+        // Set the quaternion based on our Euler angles
+        // Order 'YXZ' means: first rotate around Y (left/right), then X (up/down), then Z (not used here)
+        quaternion.setFromEuler(
+          new THREE.Euler(cameraRotation.x, cameraRotation.y, 0, "YXZ")
+        );
+
+        // Apply the quaternion to the camera
+        camera.quaternion.copy(quaternion);
+      }
+
+      // Reset the camera position to a reasonable height after travel
+      function completeTravel(islandIndex) {
+        console.log(
+          `Completing travel to island ${islandsData[islandIndex].name}`
+        );
+
+        // Reset ship position
+        ship.position.set(0, 0, 0);
+
+        // Reset camera position with the correct height
+        camera.position.set(6, 15, 18);
+
+        // Update current island index
+        currentIslandIndex = islandIndex;
+
+        // Create new island
+        createIsland(islandIndex);
+
+        // Hide travel notification
+        travelNotification.style.display = "none";
+
+        // Update island information
+        document.getElementById("island-name").textContent =
+          islandsData[currentIslandIndex].name;
+        document.getElementById("island-description").textContent =
+          islandsData[currentIslandIndex].description;
+
+        // Allow movement again
+        isTravel = false;
+
+        console.log("Travel complete");
+      }
+
+      // Update camera position based on key input
+      function updateCameraPosition() {
+        const speed = 0.8;
+        const moveVector = new THREE.Vector3();
+
+        // Forward and backward movement in the direction the camera is facing (horizontally)
+        if (moveForward) {
+          // Only use the Y rotation (horizontal) for movement
+          moveVector.z -= Math.cos(cameraRotation.y) * speed;
+          moveVector.x -= Math.sin(cameraRotation.y) * speed;
+        }
+        if (moveBackward) {
+          moveVector.z += Math.cos(cameraRotation.y) * speed;
+          moveVector.x += Math.sin(cameraRotation.y) * speed;
+        }
+        if (moveLeft) {
+          moveVector.x -= Math.cos(cameraRotation.y) * speed;
+          moveVector.z += Math.sin(cameraRotation.y) * speed;
+        }
+        if (moveRight) {
+          moveVector.x += Math.cos(cameraRotation.y) * speed;
+          moveVector.z -= Math.sin(cameraRotation.y) * speed;
+        }
+
+        // Apply movement
+        camera.position.add(moveVector);
+
+        // Keep player on the ship
+        const shipBoundary = {
+          minX: -9,
+          maxX: 9,
+          minZ: -19,
+          maxZ: 19,
+        };
+
+        camera.position.x = Math.max(
+          shipBoundary.minX,
+          Math.min(shipBoundary.maxX, camera.position.x)
+        );
+        camera.position.z = Math.max(
+          shipBoundary.minZ,
+          Math.min(shipBoundary.maxZ, camera.position.z)
+        );
+
+        // Lock vertical position at deck level
+        camera.position.y = 15;
+      }
+
+      // Animation loop
+      function animate() {
+        requestAnimationFrame(animate);
+
+        if (gameStarted) {
+          if (!isTravel) {
+            // Update camera rotation
+            updateCameraRotation();
+
+            // Update camera position
+            updateCameraPosition();
+
+            // Check if looking at island
+            checkLookingAtIsland();
+          }
+
+          // Only update islands panel when it's visible and not during travel
+          // We don't need to update it every frame
+        }
+
+        renderer.render(scene, camera);
+      }
+
+      // Initialize and start animation
+      init();
+      animate();
     </script>
-</body>
+  </body>
 </html>
