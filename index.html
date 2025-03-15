@@ -228,6 +228,16 @@
       let islandsButton, islandsPanel, travelNotification;
       let isPanelVisible = false;
 
+      // Update the controls info to reflect the new controls
+      document.getElementById("controls-info").textContent =
+        "W, A, S, D - Move | Arrow Keys - Look around";
+
+      // Also update the start instructions to match
+      document.querySelector("#start-instructions p").innerHTML =
+        "Controls:<br />" +
+        "W, A, S, D - Move around<br />" +
+        "Arrow keys - Look around";
+
       // Island data with coordinates in 3D space (x, y, z) and design info
       const islandsData = [
         {
@@ -1571,7 +1581,7 @@
         // Main Sail
         const mainSailGeometry = new THREE.PlaneGeometry(15, 20);
         const sailMaterial = new THREE.MeshStandardMaterial({
-          color: 0xffffff,
+          color: 0x000000,
           side: THREE.DoubleSide,
         });
         const mainSail = new THREE.Mesh(mainSailGeometry, sailMaterial);
@@ -1580,14 +1590,109 @@
         shipGroup.add(mainSail);
 
         // Straw Hat Jolly Roger on sail
-        const logoGeometry = new THREE.CircleGeometry(3, 16);
-        const logoMaterial = new THREE.MeshStandardMaterial({
-          color: 0xff0000,
+        const jollyRogerGroup = new THREE.Group();
+        jollyRogerGroup.position.set(0.1, 25, 2);
+        jollyRogerGroup.rotation.y = Math.PI / 2;
+
+        // White circular background
+        const backgroundGeometry = new THREE.CircleGeometry(3, 24);
+        const backgroundMaterial = new THREE.MeshStandardMaterial({
+          color: 0xffffff,
+          side: THREE.DoubleSide,
         });
-        const logo = new THREE.Mesh(logoGeometry, logoMaterial);
-        logo.position.set(0.1, 25, 2);
-        logo.rotation.y = Math.PI / 2;
-        shipGroup.add(logo);
+        const background = new THREE.Mesh(
+          backgroundGeometry,
+          backgroundMaterial
+        );
+        background.position.z = 0.01;
+        jollyRogerGroup.add(background);
+
+        // Simple skull - white circle
+        const skullGeometry = new THREE.CircleGeometry(1.6, 24);
+        const skullMaterial = new THREE.MeshStandardMaterial({
+          color: 0xffffff,
+          side: THREE.DoubleSide,
+        });
+        const skull = new THREE.Mesh(skullGeometry, skullMaterial);
+        skull.position.z = 0.02;
+        skull.position.y = -0.3; // Move skull down a bit to make room for hat
+        jollyRogerGroup.add(skull);
+
+        // Eye sockets - two black circles
+        const eyeSocketMaterial = new THREE.MeshStandardMaterial({
+          color: 0x000000,
+          side: THREE.DoubleSide,
+        });
+
+        const jrLeftEyeGeometry = new THREE.CircleGeometry(0.3, 16);
+        const jrLeftEye = new THREE.Mesh(jrLeftEyeGeometry, eyeSocketMaterial);
+        jrLeftEye.position.set(-0.5, -0.1, 0.03);
+        jollyRogerGroup.add(jrLeftEye);
+
+        const jrRightEyeGeometry = new THREE.CircleGeometry(0.3, 16);
+        const jrRightEye = new THREE.Mesh(
+          jrRightEyeGeometry,
+          eyeSocketMaterial
+        );
+        jrRightEye.position.set(0.5, -0.1, 0.03);
+        jollyRogerGroup.add(jrRightEye);
+
+        // Simple grin - a curved line using a thin ring
+        const grinGeometry = new THREE.RingGeometry(
+          0.7,
+          0.8,
+          32,
+          1,
+          Math.PI * 0.25,
+          Math.PI * 0.5
+        );
+        const grinMaterial = new THREE.MeshStandardMaterial({
+          color: 0x000000,
+          side: THREE.DoubleSide,
+        });
+        const grin = new THREE.Mesh(grinGeometry, grinMaterial);
+        grin.position.set(0, -0.7, 0.03);
+        jollyRogerGroup.add(grin);
+
+        // Crossbones - two white bars
+        const boneGeometry = new THREE.PlaneGeometry(0.3, 2);
+        const boneMaterial = new THREE.MeshStandardMaterial({
+          color: 0xffffff,
+          side: THREE.DoubleSide,
+        });
+
+        const leftBone = new THREE.Mesh(boneGeometry, boneMaterial);
+        leftBone.position.set(-0.5, -1.8, 0.025);
+        leftBone.rotation.z = Math.PI / 4;
+        jollyRogerGroup.add(leftBone);
+
+        const rightBone = new THREE.Mesh(boneGeometry, boneMaterial);
+        rightBone.position.set(0.5, -1.8, 0.025);
+        rightBone.rotation.z = -Math.PI / 4;
+        jollyRogerGroup.add(rightBone);
+
+        // Horizontal straw hat - a simple disc with a brim and band
+        // Hat brim (full circle)
+        const hatBrimGeometry = new THREE.CircleGeometry(1.4, 32);
+        const hatBrimMaterial = new THREE.MeshStandardMaterial({
+          color: 0xf0d58c, // Straw color
+          side: THREE.DoubleSide,
+        });
+        const hatBrim = new THREE.Mesh(hatBrimGeometry, hatBrimMaterial);
+        hatBrim.position.set(0, 0.8, 0.03); // Position above the skull
+        jollyRogerGroup.add(hatBrim);
+
+        // Hat red band - a simple line across the middle of the hat
+        const hatBandGeometry = new THREE.PlaneGeometry(2.8, 0.3);
+        const hatBandMaterial = new THREE.MeshStandardMaterial({
+          color: 0xd70000, // Red
+          side: THREE.DoubleSide,
+        });
+        const hatBand = new THREE.Mesh(hatBandGeometry, hatBandMaterial);
+        hatBand.position.set(0, 0.8, 0.04); // Slightly in front of the hat
+        jollyRogerGroup.add(hatBand);
+
+        shipGroup.add(jollyRogerGroup);
 
         // Ship railings
         const railingMaterial = new THREE.MeshStandardMaterial({
@@ -1781,20 +1886,62 @@
 
       // Update camera rotation based on key input
       function updateCameraRotation() {
+        // Update rotation angles based on key input
         if (lookUp) cameraRotation.x += 0.03;
         if (lookDown) cameraRotation.x -= 0.03;
         if (lookLeft) cameraRotation.y += 0.03;
         if (lookRight) cameraRotation.y -= 0.03;
 
-        // Limit vertical rotation to avoid flipping
+        // Limit vertical rotation to avoid flipping (between looking straight down and straight up)
         cameraRotation.x = Math.max(
-          -Math.PI / 2,
-          Math.min(Math.PI / 2, cameraRotation.x)
+          -Math.PI / 2 + 0.1, // Looking down (almost straight down)
+          Math.min(Math.PI / 2 - 0.1, cameraRotation.x) // Looking up (almost straight up)
         );
 
-        // Apply rotation
-        camera.rotation.x = cameraRotation.x;
-        camera.rotation.y = cameraRotation.y;
+        // Create a new quaternion for the camera rotation
+        const quaternion = new THREE.Quaternion();
+
+        // Set the quaternion based on our Euler angles
+        // Order 'YXZ' means: first rotate around Y (left/right), then X (up/down), then Z (not used here)
+        quaternion.setFromEuler(
+          new THREE.Euler(cameraRotation.x, cameraRotation.y, 0, "YXZ")
+        );
+
+        // Apply the quaternion to the camera
+        camera.quaternion.copy(quaternion);
+      }
+
+      // Reset the camera position to a reasonable height after travel
+      function completeTravel(islandIndex) {
+        console.log(
+          `Completing travel to island ${islandsData[islandIndex].name}`
+        );
+
+        // Reset ship position
+        ship.position.set(0, 0, 0);
+
+        // Reset camera position with the correct height
+        camera.position.set(6, 15, 18);
+
+        // Update current island index
+        currentIslandIndex = islandIndex;
+
+        // Create new island
+        createIsland(islandIndex);
+
+        // Hide travel notification
+        travelNotification.style.display = "none";
+
+        // Update island information
+        document.getElementById("island-name").textContent =
+          islandsData[currentIslandIndex].name;
+        document.getElementById("island-description").textContent =
+          islandsData[currentIslandIndex].description;
+
+        // Allow movement again
+        isTravel = false;
+
+        console.log("Travel complete");
       }
 
       // Update camera position based on key input
@@ -1802,7 +1949,9 @@
         const speed = 0.8;
         const moveVector = new THREE.Vector3();
 
+        // Forward and backward movement in the direction the camera is facing (horizontally)
         if (moveForward) {
+          // Only use the Y rotation (horizontal) for movement
           moveVector.z -= Math.cos(cameraRotation.y) * speed;
           moveVector.x -= Math.sin(cameraRotation.y) * speed;
         }
@@ -1839,7 +1988,7 @@
           Math.min(shipBoundary.maxZ, camera.position.z)
         );
 
-        // Keep player at deck level
+        // Lock vertical position at deck level
         camera.position.y = 15;
       }
 
